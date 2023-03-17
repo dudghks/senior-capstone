@@ -22,6 +22,18 @@ MainWindow::MainWindow(QWidget *parent)
     connect(ui->templateTwo, &QPushButton::clicked, this, [this]{ui->stackedWidget->setCurrentIndex(1);});
     connect(ui->templateThree, &QPushButton::clicked, this, [this]{ui->stackedWidget->setCurrentIndex(1);});
     connect(ui->templateNone, &QPushButton::clicked, this, [this]{ui->stackedWidget->setCurrentIndex(1);});
+
+    // Hide dock title bar
+    ui->ribbonDockWidget->setTitleBarWidget(new QWidget());;
+
+    // Add test tab
+    ui->ribbonTabWidget->addTab("Project");
+
+    QToolButton *openProjectButton = new QToolButton;
+    openProjectButton->setText(tr("Open"));
+    openProjectButton->setToolTip(tr("Open existing project"));
+    openProjectButton->setIcon(QIcon(":/img/img/logo_temp.png"));
+    ui->ribbonTabWidget->addButton("Project", "Project", openProjectButton);
 }
 
 MainWindow::~MainWindow()
