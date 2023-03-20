@@ -13,15 +13,25 @@ MainWindow::MainWindow(QWidget *parent)
                                             ui->logoLabelPic->height(), Qt::KeepAspectRatio));
 
     // Define style sheet for the new document block
-    ui->templateFrame->setStyleSheet("QFrame {background-color:#FFFFFF;}"
-                                     "QPushButton {background-color:#FFFFFF;}"
-                                     "QPushButton:hover {background-color:#1F7CF6;}");
+    ui->templateFrame->setStyleSheet("QFrame {"
+                                     "  background-color:#FFFFFF;"
+                                     "}"
+                                     "QPushButton:hover {"
+                                     "  background-color: #BCDAF7;"
+                                     "}"
+                                     "QPushButton {"
+                                     "  background-color:#FFFFFF;"
+                                     "  border: none;"
+                                     "}");
 
     // Clicking template selection -> document page
-    connect(ui->templateOne, &QPushButton::clicked, this, [this]{ui->stackedWidget->setCurrentIndex(1);});
-    connect(ui->templateTwo, &QPushButton::clicked, this, [this]{ui->stackedWidget->setCurrentIndex(1);});
-    connect(ui->templateThree, &QPushButton::clicked, this, [this]{ui->stackedWidget->setCurrentIndex(1);});
-    connect(ui->templateNone, &QPushButton::clicked, this, [this]{ui->stackedWidget->setCurrentIndex(1);});
+    connect(ui->templateOne, &QPushButton::clicked, this, [this]{ui->stackedWidget->setCurrentIndex(1); ui->ribbonDockWidget->setVisible(true);});
+    connect(ui->templateTwo, &QPushButton::clicked, this, [this]{ui->stackedWidget->setCurrentIndex(1); ui->ribbonDockWidget->setVisible(true);});
+    connect(ui->templateThree, &QPushButton::clicked, this, [this]{ui->stackedWidget->setCurrentIndex(1); ui->ribbonDockWidget->setVisible(true);});
+    connect(ui->templateNone, &QPushButton::clicked, this, [this]{ui->stackedWidget->setCurrentIndex(1); ui->ribbonDockWidget->setVisible(true);});
+
+    // Initially hide the ribbon until in the document page
+    ui->ribbonDockWidget->setVisible(false);
 
     // Hide dock title bar
     ui->ribbonDockWidget->setTitleBarWidget(new QWidget());;
