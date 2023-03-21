@@ -16,12 +16,17 @@ MainWindow::MainWindow(QWidget *parent)
     ui->templateFrame->setStyleSheet("QFrame {"
                                      "  background-color:#FFFFFF;"
                                      "}"
-                                     "QPushButton:hover {"
-                                     "  background-color: #BCDAF7;"
+                                     "QPushButton:hover:!pressed {"
+                                     "  background-color: #C5E1FC;"
+                                     "  border: 1px solid #67ABF0;"
+                                     "}"
+                                     "QPushButton:pressed {"
+                                     "  background-color: #A2CCF5;"
+                                     "  border: 1px solid #4CA0F5;"
                                      "}"
                                      "QPushButton {"
-                                     "  background-color:#FFFFFF;"
-                                     "  border: none;"
+                                     "  background-color: #FFFFFF;"
+                                     "  border: 1px solid #FFFFFF;"
                                      "}");
 
     // Clicking template selection -> document page
