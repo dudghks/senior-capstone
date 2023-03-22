@@ -1,7 +1,9 @@
 #include "mainwindow.h"
 #include "ui_mainwindow.h"
-
+#include <QTextDocument>
 #include <QPixmap>
+#include <QPageSize>
+#include <QSizeF>
 
 MainWindow::MainWindow(QWidget *parent)
     : QMainWindow(parent)
@@ -49,6 +51,19 @@ MainWindow::MainWindow(QWidget *parent)
     openProjectButton->setToolTip(tr("Open existing project"));
     openProjectButton->setIcon(QIcon(":/img/img/logo_temp.png"));
     ui->ribbonTabWidget->addButton("Project", "Project", openProjectButton);
+
+    // Change the border of the QTextEdit and establish margins
+    ui->textEdit->setStyleSheet("QTextEdit {"
+                                "   border: 1px solid #C0C0C0;"
+                                "   padding: 100px;"
+                                "   background: #FFFFFF"
+                                "}");
+    // Create Text Document for the editor
+    QPageSize pageSize(QPageSize::Letter); // Establish page size
+    QSizeF pageSizeF = pageSize.size(QPageSize::Point);
+    QTextDocument *textDocument = new QTextDocument;
+    textDocument->setPageSize(pageSizeF);
+    ui->textEdit->setDocument(textDocument);
 }
 
 MainWindow::~MainWindow()
