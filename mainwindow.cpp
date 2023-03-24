@@ -1,9 +1,11 @@
 #include "mainwindow.h"
 #include "ui_mainwindow.h"
+#include "blocktextedit.h"
 #include <QTextDocument>
 #include <QPixmap>
 #include <QPageSize>
 #include <QSizeF>
+#include <QScrollBar>
 
 MainWindow::MainWindow(QWidget *parent)
     : QMainWindow(parent)
@@ -52,18 +54,24 @@ MainWindow::MainWindow(QWidget *parent)
     openProjectButton->setIcon(QIcon(":/img/img/logo_temp.png"));
     ui->ribbonTabWidget->addButton("Project", "Project", openProjectButton);
 
-    // Change the border of the QTextEdit and establish margins
+    // Change the border of the QTextEdit
     ui->textEdit->setStyleSheet("QTextEdit {"
                                 "   border: 1px solid #C0C0C0;"
-                                "   padding: 100px;"
                                 "   background: #FFFFFF"
                                 "}");
+
     // Create Text Document for the editor
-    QPageSize pageSize(QPageSize::Letter); // Establish page size
+    // Establish page size
+    QPageSize pageSize(QPageSize::Letter);
     QSizeF pageSizeF = pageSize.size(QPageSize::Point);
     QTextDocument *textDocument = new QTextDocument;
     textDocument->setPageSize(pageSizeF);
+    textDocument->setDocumentMargin(0); // Establish margin
     ui->textEdit->setDocument(textDocument);
+
+    // Move the scroll bar
+    ui->textEdit->customSetViewportMargins(0, 0, 0 , 0);
+    ui->textEdit->setScrollBarToEdge();
 }
 
 MainWindow::~MainWindow()

@@ -39,7 +39,7 @@
        </sizepolicy>
       </property>
       <property name="currentIndex">
-       <number>0</number>
+       <number>1</number>
       </property>
       <widget class="QWidget" name="welcomePage">
        <widget class="QWidget" name="gridLayoutWidget">
@@ -362,43 +362,38 @@
          <number>0</number>
         </property>
         <item>
-         <spacer name="textEditSpacerLeft">
-          <property name="orientation">
-           <enum>Qt::Horizontal</enum>
+         <widget class="BlockTextEdit" name="textEdit">
+          <property name="sizePolicy">
+           <sizepolicy hsizetype="Fixed" vsizetype="Expanding">
+            <horstretch>0</horstretch>
+            <verstretch>0</verstretch>
+           </sizepolicy>
           </property>
-          <property name="sizeHint" stdset="0">
-           <size>
-            <width>40</width>
-            <height>20</height>
-           </size>
-          </property>
-         </spacer>
-        </item>
-        <item>
-         <widget class="QTextEdit" name="textEdit">
           <property name="minimumSize">
            <size>
             <width>850</width>
             <height>0</height>
            </size>
           </property>
+          <property name="maximumSize">
+           <size>
+            <width>850</width>
+            <height>16777215</height>
+           </size>
+          </property>
           <property name="styleSheet">
            <string notr="true">border-color: rgb(204, 204, 204);</string>
           </property>
+          <property name="verticalScrollBarPolicy">
+           <enum>Qt::ScrollBarAsNeeded</enum>
+          </property>
+          <property name="horizontalScrollBarPolicy">
+           <enum>Qt::ScrollBarAsNeeded</enum>
+          </property>
+          <property name="sizeAdjustPolicy">
+           <enum>QAbstractScrollArea::AdjustToContents</enum>
+          </property>
          </widget>
-        </item>
-        <item>
-         <spacer name="textEditSpacerRight">
-          <property name="orientation">
-           <enum>Qt::Horizontal</enum>
-          </property>
-          <property name="sizeHint" stdset="0">
-           <size>
-            <width>40</width>
-            <height>20</height>
-           </size>
-          </property>
-         </spacer>
         </item>
        </layout>
       </widget>
@@ -487,6 +482,11 @@
    <extends>QTabWidget</extends>
    <header>ribbon.h</header>
    <container>1</container>
+  </customwidget>
+  <customwidget>
+   <class>BlockTextEdit</class>
+   <extends>QTextEdit</extends>
+   <header>blocktextedit.h</header>
   </customwidget>
  </customwidgets>
  <resources/>
