@@ -6,6 +6,8 @@
 #include <QPageSize>
 #include <QSizeF>
 #include <QScrollBar>
+#include <QTextCursor>
+#include <QPrinter>
 
 MainWindow::MainWindow(QWidget *parent)
     : QMainWindow(parent)
@@ -62,16 +64,15 @@ MainWindow::MainWindow(QWidget *parent)
 
     // Create Text Document for the editor
     // Establish page size
-    QPageSize pageSize(QPageSize::Letter);
-    QSizeF pageSizeF = pageSize.size(QPageSize::Point);
     QTextDocument *textDocument = new QTextDocument;
-    textDocument->setPageSize(pageSizeF);
-    textDocument->setDocumentMargin(0); // Establish margin
     ui->textEdit->setDocument(textDocument);
+    QPrinter printer;
+    printer.setPageSize(QPageSize(QPageSize::Letter));
+    textDocument->setPageSize(printer.pageRect(QPrinter::DevicePixel).size());
+    qreal dpi = printer.resolution();
+    ui->textEdit->setFixedSize(textDocument->pageSize().toSize());
+    textDocument->setDocumentMargin(dpi); // Establish margin
 
-    // Move the scroll bar
-    ui->textEdit->customSetViewportMargins(0, 0, 0 , 0);
-    ui->textEdit->setScrollBarToEdge();
 }
 
 MainWindow::~MainWindow()
