@@ -18,9 +18,14 @@ MainWindow::MainWindow(QWidget *parent)
     ui->logoLabelPic->setPixmap(logo.scaled(ui->logoLabelPic->width(),
                                             ui->logoLabelPic->height(), Qt::KeepAspectRatio));
 
+    // Set background color
+    ui->stackedWidget->setStyleSheet("QWidget#documentPage, QWidget#welcomePage {"
+                                     "  background-color: #EAEAEA;"
+                                     "}");
+
     // Define style sheet for the new document block
     ui->templateFrame->setStyleSheet("QFrame {"
-                                     "  background-color:#FFFFFF;"
+                                     "  background-color: #FFFFFF;"
                                      "}"
                                      "QPushButton:hover:!pressed {"
                                      "  background-color: #C5E1FC;"
@@ -47,14 +52,42 @@ MainWindow::MainWindow(QWidget *parent)
     // Hide dock title bar
     ui->ribbonDockWidget->setTitleBarWidget(new QWidget());;
 
-    // Add test tab
-    ui->ribbonTabWidget->addTab("Project");
+    // Add file tab and buttons
+    ui->ribbonTabWidget->addTab("File");
 
-    QToolButton *openProjectButton = new QToolButton;
-    openProjectButton->setText(tr("Open"));
-    openProjectButton->setToolTip(tr("Open existing project"));
-    openProjectButton->setIcon(QIcon(":/img/img/logo_temp.png"));
-    ui->ribbonTabWidget->addButton("Project", "Project", openProjectButton);
+    // New, Open, Save, Save As buttons
+    QToolButton *newDocButton = new QToolButton;
+    newDocButton->setText(tr("New"));
+    newDocButton->setToolTip(tr("Open new project"));
+    newDocButton->setIcon(QIcon(":/img/img/logo_temp.png"));
+    ui->ribbonTabWidget->addButton("File", "Files", newDocButton);
+    QToolButton *openDocButton = new QToolButton;
+    openDocButton->setText(tr("Open"));
+    openDocButton->setToolTip(tr("Open existing project"));
+    openDocButton->setIcon(QIcon(":/img/img/logo_temp.png"));
+    ui->ribbonTabWidget->addButton("File", "Files", openDocButton);
+    QToolButton *saveDocButton = new QToolButton;
+    saveDocButton->setText(tr("Save"));
+    saveDocButton->setToolTip(tr("Save current project"));
+    saveDocButton->setIcon(QIcon(":/img/img/logo_temp.png"));
+    ui->ribbonTabWidget->addButton("File", "Files", saveDocButton);
+    QToolButton *saveDocAsButton = new QToolButton;
+    saveDocAsButton->setText(tr("Save As"));
+    saveDocAsButton->setToolTip(tr("Save current project as"));
+    saveDocAsButton->setIcon(QIcon(":/img/img/logo_temp.png"));
+    ui->ribbonTabWidget->addButton("File", "Files", saveDocAsButton);
+
+    // Print, export buttons
+    QToolButton *printDocButton = new QToolButton;
+    printDocButton->setText(tr("Print"));
+    printDocButton->setToolTip(tr("Print current project"));
+    printDocButton->setIcon(QIcon(":/img/img/logo_temp.png"));
+    ui->ribbonTabWidget->addButton("File", "Share", printDocButton);
+    QToolButton *exportDocButton = new QToolButton;
+    exportDocButton->setText(tr("Export"));
+    exportDocButton->setToolTip(tr("Open existing project"));
+    exportDocButton->setIcon(QIcon(":/img/img/logo_temp.png"));
+    ui->ribbonTabWidget->addButton("File", "Share", exportDocButton);
 
     // Change the border of the QTextEdit
     ui->textEdit->setStyleSheet("QTextEdit {"

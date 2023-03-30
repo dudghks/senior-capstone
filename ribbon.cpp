@@ -30,6 +30,7 @@ Ribbon::Ribbon(QWidget *parent)
   QString styleSheetText = QString(
     "QTabWidget::pane {"
     "  border-top: 1px solid rgb(%4, %5, %6);"
+    "  border-bottom: 1px solid rgb(%4, %5, %6);"
     "  position: absolute;"
     "  top: -1px;"
     "}"
@@ -37,8 +38,8 @@ Ribbon::Ribbon(QWidget *parent)
     "QTabBar::tab {"
     "  padding-top: 5px;"
     "  padding-bottom: 5px;"
-    "  padding-left: 10px;"
-    "  padding-right: 10px;"
+    "  padding-left: 20px;"
+    "  padding-right: 20px;"
     "  margin-top: 1px;"
     "}"
     ""

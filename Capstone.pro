@@ -14,6 +14,7 @@ SOURCES += \
     mainwindow.cpp \
     ribbon.cpp \
     ribbonbuttongroup.cpp \
+    ribbonsmallbuttonsgroup.cpp \
     ribbontabcontent.cpp
 
 HEADERS += \
@@ -21,11 +22,13 @@ HEADERS += \
     mainwindow.h \
     ribbon.h \
     ribbonbuttongroup.h \
+    ribbonsmallbuttonsgroup.h \
     ribbontabcontent.h
 
 FORMS += \
     mainwindow.ui \
     ribbonbuttongroup.ui \
+    ribbonsmallbuttonsgroup.ui \
     ribbontabcontent.ui
 
 # Default rules for deployment.

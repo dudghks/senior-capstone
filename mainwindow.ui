@@ -39,7 +39,7 @@
        </sizepolicy>
       </property>
       <property name="currentIndex">
-       <number>1</number>
+       <number>0</number>
       </property>
       <widget class="QWidget" name="welcomePage">
        <widget class="QWidget" name="gridLayoutWidget">
@@ -421,13 +421,13 @@
    <property name="minimumSize">
     <size>
      <width>135</width>
-     <height>115</height>
+     <height>120</height>
     </size>
    </property>
    <property name="maximumSize">
     <size>
      <width>524287</width>
-     <height>115</height>
+     <height>120</height>
     </size>
    </property>
    <property name="features">

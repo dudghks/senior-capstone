@@ -24,6 +24,8 @@ RibbonTabContent::~RibbonTabContent()
   delete ui;
 }
 
+/// \todo addSmallGroup
+
 void RibbonTabContent::addGroup(const QString &groupName)
 {
   RibbonButtonGroup *ribbonButtonGroup = new RibbonButtonGroup;

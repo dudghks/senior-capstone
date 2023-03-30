@@ -45,9 +45,9 @@ int RibbonButtonGroup::buttonCount() const
 void RibbonButtonGroup::addButton(QToolButton *button)
 {
   button->setSizePolicy(QSizePolicy::Preferred, QSizePolicy::Preferred);
-  button->setMinimumSize(48, 48);
+  button->setMinimumSize(58, 58);
   button->setAutoRaise(true);
-  button->setIconSize(QSize(32,32));
+  button->setIconSize(QSize(40,40));
   button->setToolButtonStyle(Qt::ToolButtonTextUnderIcon);
 
   ui->horizontalLayout->addWidget(button);
