@@ -19,7 +19,6 @@ public:
   virtual ~RibbonSmallButtonsGroup();
 
   /// Set the title of the button group.
-  /// The title is shown not shown.
   ///
   /// \param[in] title The title
   void setTitle(const QString &title);
@@ -37,26 +36,30 @@ public:
   /// Add a tool button to the group.
   ///
   /// \param[in] button The button
-  /// \param[in] position The position (0=top, 1=bottom)
-  void addButton(QToolButton *button, int position);
+  /// \param[in] row The row
+  /// \param[in] column The column
+  void addButton(QToolButton *button, int row, int column);
 
   /// Add a font combo box to the group.
   ///
   /// \param[in] button The button
-  /// \param[in] position The position (0=top, 1=bottom)
-  void addButton(QFontComboBox *button, int position);
+  /// \param[in] row The row
+  /// \param[in] column The column
+  void addButton(QFontComboBox *button, int row, int column);
 
   /// Add a double spin box to the group.
   ///
   /// \param[in] button The button
-  /// \param[in] position The position (0=top, 1=bottom)
-  void addButton(QSpinBox *button, int position);
+  /// \param[in] row The row
+  /// \param[in] column The column
+  void addButton(QSpinBox *button, int row, int column);
 
   /// Remove a button from the group.
   ///
   /// \param[in] button The button
-  /// \param[in] position The position (0=top, 1=bottom)
-  void removeButton(QToolButton *button, int position);
+  void removeButton(QToolButton *button);
+  void removeButton(QFontComboBox *button);
+  void removeButton(QSpinBox *button);
 
 private:
   Ui::RibbonSmallButtonsGroup *ui;

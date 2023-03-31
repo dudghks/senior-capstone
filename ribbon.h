@@ -13,6 +13,8 @@
 
 #include <QTabWidget>
 #include <QToolButton>
+#include <QFontComboBox>
+#include <QSpinBox>
 
 class Ribbon : public QTabWidget
 {
@@ -43,6 +45,13 @@ public:
   /// \param[in] groupName Name of the group
   void addGroup(const QString &tabName, const QString &groupName);
 
+  /// Add a small button group to the specified tab.
+  /// The specified tab is created if it does not exist.
+  ///
+  /// \param[in] tabName Name of the tab
+  /// \param[in] groupName Name of the group
+  void addSmallGroup(const QString &tabName, const QString &groupName);
+
   /// Add a button to the specified group.
   /// The specified group and tab are created if they do not exist.
   ///
@@ -60,6 +69,31 @@ public:
   /// \param[in] groupName Name of the group
   /// \param[in] button The button
   void removeButton(const QString &tabName, const QString &groupName, QToolButton *button);
+
+  /// Add a small button to the specified small button group.
+  /// The specified group and tab are created if they do not exist.
+  /// Must be a QToolButton, QFontComboBox, or QSpinBox
+  ///
+  /// \param[in] tabName Name of the tab
+  /// \param[in] groupName Name of the group
+  /// \param[in] button The button
+  /// \param[in] row The row
+  /// \param[in] column The column
+  void addSmallButton(const QString &tabName, const QString &groupName, QToolButton *button, int row, int column);
+  void addSmallButton(const QString &tabName, const QString &groupName, QFontComboBox *button, int row, int column);
+  void addSmallButton(const QString &tabName, const QString &groupName, QSpinBox *button, int row, int column);
+
+  /// Remove a small button from the specified small button group.
+  /// Do nothing if the button, group or tab doesn't exist.
+  /// The button group and tab are also removed if they become empty due to
+  /// the removal of the button.
+  /// Must be a QToolButton, QFontComboBox, or QSpinBox
+  ///
+  /// \param[in] tabName Name of the tab
+  /// \param[in] groupName Name of the group
+  void removeSmallButton(const QString &tabName, const QString &groupName, QToolButton *button);
+  void removeSmallButton(const QString &tabName, const QString &groupName, QFontComboBox *button);
+  void removeSmallButton(const QString &tabName, const QString &groupName, QSpinBox *button);
 };
 
 #endif // RIBBONTABWIDGET_H

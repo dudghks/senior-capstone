@@ -136,6 +136,38 @@ void Ribbon::addGroup(const QString &tabName, const QString &groupName)
   }
 }
 
+void Ribbon::addSmallGroup(const QString &tabName, const QString &groupName)
+{
+  // Find ribbon tab
+  QWidget *tab = nullptr;
+  for (int i = 0; i < count(); i++)
+  {
+    if (tabText(i).toLower() == tabName.toLower())
+    {
+      tab = QTabWidget::widget(i);
+      break;
+    }
+  }
+
+  if (tab != nullptr)
+  {
+    // Tab found
+    // Add ribbon group
+    RibbonTabContent *ribbonTabContent = static_cast<RibbonTabContent*>(tab);
+    ribbonTabContent->addSmallGroup(groupName);
+  }
+  else
+  {
+    // Tab not found
+    // Create tab
+    addTab(tabName);
+
+    // Add ribbon group
+    addSmallGroup(tabName, groupName);
+  }
+}
+
+
 void Ribbon::addButton(const QString &tabName, const QString &groupName, QToolButton *button)
 {
   // Find ribbon tab
@@ -186,6 +218,180 @@ void Ribbon::removeButton(const QString &tabName, const QString &groupName, QToo
     // Remove ribbon button
     RibbonTabContent *ribbonTabContent = static_cast<RibbonTabContent*>(tab);
     ribbonTabContent->removeButton(groupName, button);
+
+    if (ribbonTabContent->groupCount() == 0)
+    {
+      removeTab(tabName);
+    }
+  }
+}
+
+void Ribbon::addSmallButton(const QString &tabName, const QString &groupName, QToolButton *button, int row, int column)
+{
+  // Find ribbon tab
+  QWidget *tab = nullptr;
+  for (int i = 0; i < count(); i++)
+  {
+    if (tabText(i).toLower() == tabName.toLower())
+    {
+      tab = QTabWidget::widget(i);
+      break;
+    }
+  }
+
+  if (tab != nullptr)
+  {
+    // Tab found
+    // Add ribbon button
+    RibbonTabContent *ribbonTabContent = static_cast<RibbonTabContent*>(tab);
+    ribbonTabContent->addSmallButton(groupName, button, row, column);
+  }
+  else
+  {
+    // Tab not found.
+    // Create tab
+    addTab(tabName);
+
+    // Add ribbon button
+    addSmallButton(tabName, groupName, button, row, column);
+  }
+}
+
+void Ribbon::addSmallButton(const QString &tabName, const QString &groupName, QFontComboBox *button, int row, int column)
+{
+  // Find ribbon tab
+  QWidget *tab = nullptr;
+  for (int i = 0; i < count(); i++)
+  {
+    if (tabText(i).toLower() == tabName.toLower())
+    {
+      tab = QTabWidget::widget(i);
+      break;
+    }
+  }
+
+  if (tab != nullptr)
+  {
+    // Tab found
+    // Add ribbon button
+    RibbonTabContent *ribbonTabContent = static_cast<RibbonTabContent*>(tab);
+    ribbonTabContent->addSmallButton(groupName, button, row, column);
+  }
+  else
+  {
+    // Tab not found.
+    // Create tab
+    addTab(tabName);
+
+    // Add ribbon button
+    addSmallButton(tabName, groupName, button, row, column);
+  }
+}
+
+void Ribbon::addSmallButton(const QString &tabName, const QString &groupName, QSpinBox *button, int row, int column)
+{
+  // Find ribbon tab
+  QWidget *tab = nullptr;
+  for (int i = 0; i < count(); i++)
+  {
+    if (tabText(i).toLower() == tabName.toLower())
+    {
+      tab = QTabWidget::widget(i);
+      break;
+    }
+  }
+
+  if (tab != nullptr)
+  {
+    // Tab found
+    // Add ribbon button
+    RibbonTabContent *ribbonTabContent = static_cast<RibbonTabContent*>(tab);
+    ribbonTabContent->addSmallButton(groupName, button, row, column);
+  }
+  else
+  {
+    // Tab not found.
+    // Create tab
+    addTab(tabName);
+
+    // Add ribbon button
+    addSmallButton(tabName, groupName, button, row, column);
+  }
+}
+
+void Ribbon::removeSmallButton(const QString &tabName, const QString &groupName, QToolButton *button)
+{
+  // Find ribbon tab
+  QWidget *tab = nullptr;
+  for (int i = 0; i < count(); i++)
+  {
+    if (tabText(i).toLower() == tabName.toLower())
+    {
+      tab = QTabWidget::widget(i);
+      break;
+    }
+  }
+
+  if (tab != nullptr)
+  {
+    // Tab found
+    // Remove ribbon button
+    RibbonTabContent *ribbonTabContent = static_cast<RibbonTabContent*>(tab);
+    ribbonTabContent->removeSmallButton(groupName, button);
+
+    if (ribbonTabContent->groupCount() == 0)
+    {
+      removeTab(tabName);
+    }
+  }
+}
+
+void Ribbon::removeSmallButton(const QString &tabName, const QString &groupName, QFontComboBox *button)
+{
+  // Find ribbon tab
+  QWidget *tab = nullptr;
+  for (int i = 0; i < count(); i++)
+  {
+    if (tabText(i).toLower() == tabName.toLower())
+    {
+      tab = QTabWidget::widget(i);
+      break;
+    }
+  }
+
+  if (tab != nullptr)
+  {
+    // Tab found
+    // Remove ribbon button
+    RibbonTabContent *ribbonTabContent = static_cast<RibbonTabContent*>(tab);
+    ribbonTabContent->removeSmallButton(groupName, button);
+
+    if (ribbonTabContent->groupCount() == 0)
+    {
+      removeTab(tabName);
+    }
+  }
+}
+
+void Ribbon::removeSmallButton(const QString &tabName, const QString &groupName, QSpinBox *button)
+{
+  // Find ribbon tab
+  QWidget *tab = nullptr;
+  for (int i = 0; i < count(); i++)
+  {
+    if (tabText(i).toLower() == tabName.toLower())
+    {
+      tab = QTabWidget::widget(i);
+      break;
+    }
+  }
+
+  if (tab != nullptr)
+  {
+    // Tab found
+    // Remove ribbon button
+    RibbonTabContent *ribbonTabContent = static_cast<RibbonTabContent*>(tab);
+    ribbonTabContent->removeSmallButton(groupName, button);
 
     if (ribbonTabContent->groupCount() == 0)
     {

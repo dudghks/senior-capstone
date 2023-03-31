@@ -6,7 +6,7 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>150</width>
+    <width>135</width>
     <height>37</height>
    </rect>
   </property>
@@ -34,21 +34,60 @@
      <property name="spacing">
       <number>0</number>
      </property>
+     <property name="leftMargin">
+      <number>2</number>
+     </property>
+     <property name="topMargin">
+      <number>2</number>
+     </property>
+     <property name="rightMargin">
+      <number>2</number>
+     </property>
+     <property name="bottomMargin">
+      <number>2</number>
+     </property>
      <item>
-      <layout class="QHBoxLayout" name="topHorizontalLayout">
-       <property name="spacing">
+      <layout class="QGridLayout" name="groupGridLayout">
+       <property name="topMargin">
+        <number>3</number>
+       </property>
+       <property name="horizontalSpacing">
         <number>0</number>
+       </property>
+       <property name="verticalSpacing">
+        <number>7</number>
        </property>
       </layout>
      </item>
      <item>
-      <layout class="QHBoxLayout" name="bottomHorizontalLayout">
-       <property name="spacing">
-        <number>0</number>
+      <widget class="QLabel" name="label">
+       <property name="font">
+        <font>
+         <pointsize>8</pointsize>
+        </font>
        </property>
-      </layout>
+       <property name="text">
+        <string>TextLabel</string>
+       </property>
+       <property name="alignment">
+        <set>Qt::AlignBottom|Qt::AlignHCenter</set>
+       </property>
+      </widget>
      </item>
     </layout>
+   </item>
+   <item row="0" column="1">
+    <widget class="Line" name="line">
+     <property name="styleSheet">
+      <string notr="true">color: #c0c0c0;</string>
+     </property>
+     <property name="frameShadow">
+      <enum>QFrame::Plain</enum>
+     </property>
+     <property name="orientation">
+      <enum>Qt::Vertical</enum>
+     </property>
+    </widget>
    </item>
   </layout>
  </widget>

@@ -13,6 +13,8 @@
 
 #include <QWidget>
 #include <QToolButton>
+#include <QFontComboBox>
+#include <QSpinBox>
 
 namespace Ui {
 class RibbonTabContent;
@@ -36,6 +38,16 @@ public:
   /// \param[in] groupName Name of the group
   void removeGroup(const QString &groupName);
 
+  /// Add a small button group to the tab content.
+  ///
+  /// \param[in] groupName Name of the group
+  void addSmallGroup (const QString &groupName);
+
+  /// Remove a small button group from the tab content.
+  ///
+  /// \param[in] groupName Name of the group
+  void removeSmallGroup(const QString &groupName);
+
   /// Get the number of button groups in this tab content.
   ///
   /// \return The number of button groups
@@ -54,6 +66,28 @@ public:
   /// \param[in] groupName Name of the group
   /// \param[in] button The button
   void removeButton(const QString &groupName, QToolButton *button);
+
+  /// Add a small button to the specified group.
+  /// The group is created if it does not exist.
+  /// Must be a QToolButton, QFontComboBox, or QSpinBox
+  ///
+  /// \param[in] groupName Name of the group
+  /// \param[in] button The button
+  /// \param[in] row The row
+  /// \param[in] column The column
+  void addSmallButton(const QString &groupName, QToolButton *button, int row, int column);
+  void addSmallButton(const QString &groupName, QFontComboBox *button, int row, int column);
+  void addSmallButton(const QString &groupName, QSpinBox *button, int row, int column);
+
+  /// Remove a small button from the specified group.
+  /// The group is also removed if it's empty.
+  /// Must be a QToolButton, QFontComboBox, or QSpinBox
+  ///
+  /// \param[in] groupName Name of the group
+  /// \param[in] button The button
+  void removeSmallButton(const QString &groupName, QToolButton *button);
+  void removeSmallButton(const QString &groupName, QFontComboBox *button);
+  void removeSmallButton(const QString &groupName, QSpinBox *button);
 
 private:
   Ui::RibbonTabContent *ui;
