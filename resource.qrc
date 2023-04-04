@@ -20,5 +20,22 @@
         <file>icons/superscript.png</file>
         <file>icons/underline.png</file>
         <file>icons/undo.png</file>
+        <file>icons/align_center.png</file>
+        <file>icons/align_left.png</file>
+        <file>icons/align_right.png</file>
+        <file>icons/blank_page.png</file>
+        <file>icons/bookmark.png</file>
+        <file>icons/bullets.png</file>
+        <file>icons/character.png</file>
+        <file>icons/code.png</file>
+        <file>icons/equation.png</file>
+        <file>icons/hyperlink.png</file>
+        <file>icons/image.png</file>
+        <file>icons/indent.png</file>
+        <file>icons/not_indent.png</file>
+        <file>icons/numbers.png</file>
+        <file>icons/checklist.png</file>
+        <file>icons/table.png</file>
+        <file>icons/page_break.png</file>
     </qresource>
 </RCC>

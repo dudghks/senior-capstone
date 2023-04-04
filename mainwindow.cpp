@@ -16,14 +16,16 @@ MainWindow::MainWindow(QWidget *parent)
     , ui(new Ui::MainWindow)
 {
     ui->setupUi(this);
-    QPixmap logo(":/img/img/logo_temp.png");
-    ui->logoLabelPic->setPixmap(logo.scaled(ui->logoLabelPic->width(),
-                                            ui->logoLabelPic->height(), Qt::KeepAspectRatio));
 
     // Set background color
     ui->stackedWidget->setStyleSheet("QWidget#documentPage, QWidget#welcomePage {"
                                      "  background-color: #EAEAEA;"
                                      "}");
+
+    // Place the logo next to the name
+    QPixmap logo(":/img/img/logo_temp.png");
+    ui->logoLabelPic->setPixmap(logo.scaled(ui->logoLabelPic->width(),
+                                            ui->logoLabelPic->height(), Qt::KeepAspectRatio));
 
     // Define style sheet for the new document block
     ui->templateFrame->setStyleSheet("QFrame {"
@@ -107,37 +109,37 @@ MainWindow::MainWindow(QWidget *parent)
     cutButton->setText("Cut");
     cutButton->setIcon(QIcon(":/icons/cut.png"));
     cutButton->setToolButtonStyle(Qt::ToolButtonTextBesideIcon);
-    ui->ribbonTabWidget->addSmallButton("Home", "Clipboard", cutButton, 0, 0);
+    ui->ribbonTabWidget->addSmallButton("Home", "Edit", cutButton, 0, 0);
     QToolButton *copyButton = new QToolButton;
     copyButton->setToolTip(tr("Copy selection to clipboard\n(Ctrl+C)"));
     copyButton->setText("Copy");
     copyButton->setIcon(QIcon(":/icons/copy.png"));
     copyButton->setToolButtonStyle(Qt::ToolButtonTextBesideIcon);
-    ui->ribbonTabWidget->addSmallButton("Home", "Clipboard", copyButton, 1, 0);
+    ui->ribbonTabWidget->addSmallButton("Home", "Edit", copyButton, 1, 0);
     QToolButton *pasteButton = new QToolButton;
     pasteButton->setToolTip(tr("Paste selection to document\n(Ctrl+V)"));
     pasteButton->setText("Paste");
     pasteButton->setIcon(QIcon(":/icons/paste.png"));
     pasteButton->setToolButtonStyle(Qt::ToolButtonTextBesideIcon);
-    ui->ribbonTabWidget->addSmallButton("Home", "Clipboard", pasteButton, 0, 1);
+    ui->ribbonTabWidget->addSmallButton("Home", "Edit", pasteButton, 0, 1);
     QToolButton *findButton = new QToolButton;
     findButton->setToolTip(tr("Search for text within the document\n(Ctrl+F)"));
     findButton->setText("Find");
     findButton->setIcon(QIcon(":/icons/find.png"));
     findButton->setToolButtonStyle(Qt::ToolButtonTextBesideIcon);
-    ui->ribbonTabWidget->addSmallButton("Home", "Clipboard", findButton, 1, 1);
+    ui->ribbonTabWidget->addSmallButton("Home", "Edit", findButton, 1, 1);
     QToolButton *undoButton = new QToolButton;
     undoButton->setToolTip(tr("Undo recent changes\n(Ctrl+Z"));
     undoButton->setText("Undo");
     undoButton->setIcon(QIcon(":/icons/undo.png"));
     undoButton->setToolButtonStyle(Qt::ToolButtonTextBesideIcon);
-    ui->ribbonTabWidget->addSmallButton("Home", "Clipboard", undoButton, 0, 2);
+    ui->ribbonTabWidget->addSmallButton("Home", "Edit", undoButton, 0, 2);
     QToolButton *redoButton = new QToolButton;
     redoButton->setToolTip(tr("Reverse recent undo\nCtrl+Y"));
     redoButton->setText("Redo");
     redoButton->setIcon(QIcon(":/icons/redo.png"));
     redoButton->setToolButtonStyle(Qt::ToolButtonTextBesideIcon);
-    ui->ribbonTabWidget->addSmallButton("Home", "Clipboard", redoButton, 1, 2);
+    ui->ribbonTabWidget->addSmallButton("Home", "Edit", redoButton, 1, 2);
 
     // Font: Font, Font Size, Bold, Italics, Underline, Subscript, Superscript, Color, Highlight
     QFontComboBox *fontBox = new QFontComboBox;
@@ -145,23 +147,23 @@ MainWindow::MainWindow(QWidget *parent)
     QSpinBox *fontSizeBox = new QSpinBox;
     ui->ribbonTabWidget->addSmallButton("Home", "Font", fontSizeBox, 0, 4);
     QToolButton *boldButton = new QToolButton;
-    boldButton->setToolTip(tr("Bold"));
+    boldButton->setToolTip(tr("Bold\n(Ctrl+B)"));
     boldButton->setIcon(QIcon(":/icons/bold.png"));
     ui->ribbonTabWidget->addSmallButton("Home", "Font", boldButton, 1, 0);
     QToolButton *italicButton = new QToolButton;
-    italicButton->setToolTip(tr("Italics"));
+    italicButton->setToolTip(tr("Italics\n(Ctrl+I)"));
     italicButton->setIcon(QIcon(":/icons/italic.png"));
     ui->ribbonTabWidget->addSmallButton("Home", "Font", italicButton, 1, 1);
     QToolButton *underlineButton = new QToolButton;
-    underlineButton->setToolTip(tr("Underline"));
+    underlineButton->setToolTip(tr("Underline\n(Ctrl+U)"));
     underlineButton->setIcon(QIcon(":/icons/underline.png"));
     ui->ribbonTabWidget->addSmallButton("Home", "Font", underlineButton, 1, 2);
     QToolButton *superscriptButton = new QToolButton;
-    superscriptButton->setToolTip(tr("Superscript"));
+    superscriptButton->setToolTip(tr("Superscript\n(Ctrl+Shift+.)"));
     superscriptButton->setIcon(QIcon(":/icons/superscript.png"));
     ui->ribbonTabWidget->addSmallButton("Home", "Font", superscriptButton, 0, 5);
     QToolButton *subscriptButton = new QToolButton;
-    subscriptButton->setToolTip(tr("Subscript"));
+    subscriptButton->setToolTip(tr("Subscript\n(Ctrl+Shift+,)"));
     subscriptButton->setIcon(QIcon(":/icons/subscript.png"));
     ui->ribbonTabWidget->addSmallButton("Home", "Font", subscriptButton, 1, 5);
     QToolButton *textColorButton = new QToolButton;
@@ -174,6 +176,121 @@ MainWindow::MainWindow(QWidget *parent)
     textHighlightButton->setIcon(QIcon(":/img/img/logo_temp.png"));
     ui->ribbonTabWidget->addSmallButton("Home", "Font", textHighlightButton, 1, 4);
     textHighlightButton->setPopupMode(QToolButton::MenuButtonPopup);
+
+    // Paragraph: Numbered/Bulluted/Check List, Alignment (left, center, right, justify), Indent Left/Right
+    QToolButton *numberedList = new QToolButton;
+    numberedList->setToolTip(tr("Numbered List\n(Ctrl+Shift+7"));
+    numberedList->setIcon(QIcon(":/icons/numbers.png"));
+    ui->ribbonTabWidget->addSmallButton("Home", "Paragraph", numberedList, 0, 0);
+    numberedList->setPopupMode(QToolButton::MenuButtonPopup);
+    QToolButton *bulletedList = new QToolButton;
+    bulletedList->setToolTip(tr("Bulleted List\n(Ctrl+Shift+8)"));
+    bulletedList->setIcon(QIcon(":/icons/bullets.png"));
+    ui->ribbonTabWidget->addSmallButton("Home", "Paragraph", bulletedList, 0, 1);
+    bulletedList->setPopupMode(QToolButton::MenuButtonPopup);
+    QToolButton *checkList = new QToolButton;
+    checkList->setToolTip(tr("Check List\n(Ctrl+Shift+9)"));
+    checkList->setIcon(QIcon(":/icons/checklist.png"));
+    ui->ribbonTabWidget->addSmallButton("Home", "Paragraph", checkList, 0, 2);
+    QToolButton *alignment = new QToolButton;
+    alignment->setToolTip(tr("Text Alignment"));
+    alignment->setIcon(QIcon(":/icons/align_left.png"));
+    ui->ribbonTabWidget->addSmallButton("Home", "Paragraph", alignment, 1, 0);
+    alignment->setPopupMode(QToolButton::MenuButtonPopup);
+    checkList->setPopupMode(QToolButton::MenuButtonPopup);
+    QToolButton *indentLeft = new QToolButton;
+    indentLeft->setToolTip(tr("Indent Line Left\n(Ctrl+[)"));
+    indentLeft->setIcon(QIcon(":/icons/not_indent.png"));
+    ui->ribbonTabWidget->addSmallButton("Home", "Paragraph", indentLeft, 1, 1);
+    QToolButton *indentRight = new QToolButton;
+    indentRight->setToolTip(tr("Indent Line Right\n(Ctrl+])"));
+    indentRight->setIcon(QIcon(":/icons/indent.png"));
+    ui->ribbonTabWidget->addSmallButton("Home", "Paragraph", indentRight, 1, 2);
+
+    // Add Insert tab and buttons
+    ui->ribbonTabWidget->addTab("Insert");
+
+    // Document: Blank Page, Page Break, Bookmark, Link
+    QToolButton *blankPage = new QToolButton;
+    blankPage->setToolTip(tr("Inserts a blank page at the cursor"));
+    blankPage->setText("Blank Page");
+    blankPage->setIcon(QIcon(":/icons/blank_page.png"));
+    blankPage->setToolButtonStyle(Qt::ToolButtonTextBesideIcon);
+    ui->ribbonTabWidget->addSmallButton("Insert", "Document", blankPage, 0, 0);
+    QToolButton *pageBreak = new QToolButton;
+    pageBreak->setToolTip(tr("Inserts a page break at the cursor"));
+    pageBreak->setText("Page Break");
+    pageBreak->setIcon(QIcon(":/icons/page_break.png"));
+    pageBreak->setToolButtonStyle(Qt::ToolButtonTextBesideIcon);
+    ui->ribbonTabWidget->addSmallButton("Insert", "Document", pageBreak, 1, 0);
+    QToolButton *bookmark = new QToolButton;
+    bookmark->setToolTip(tr("Inserts a bookmark at the selected text\nUsed for creating outlines"));
+    bookmark->setText("Bookmark");
+    bookmark->setIcon(QIcon(":/icons/bookmark.png"));
+    bookmark->setToolButtonStyle(Qt::ToolButtonTextBesideIcon);
+    ui->ribbonTabWidget->addSmallButton("Insert", "Document", bookmark, 0, 1);
+    QToolButton *hyperlink = new QToolButton;
+    hyperlink->setToolTip(tr("Inserts a hyperlink at the cursor\nor selected text"));
+    hyperlink->setText("Hyperlink");
+    hyperlink->setIcon(QIcon(":/icons/hyperlink.png"));
+    hyperlink->setToolButtonStyle(Qt::ToolButtonTextBesideIcon);
+    ui->ribbonTabWidget->addSmallButton("Insert", "Document", hyperlink, 1, 1);
+
+    // Blocks: New block (Left, right, up, down:default), Split (selection, lines), Merge (selection)
+    QToolButton *newBlock = new QToolButton;
+    newBlock->setToolTip(tr("Insert a new block (below by default)"));
+    newBlock->setIcon(QIcon(":/img/img/logo_temp.png"));
+    newBlock->setText("New Block");
+    ui->ribbonTabWidget->addButton("Insert", "Blocks", newBlock);
+    newBlock->setPopupMode(QToolButton::MenuButtonPopup);
+    QToolButton *splitBlock = new QToolButton;
+    splitBlock->setToolTip(tr("Split the current block"));
+    splitBlock->setIcon(QIcon(":/img/img/logo_temp.png"));
+    splitBlock->setText("Split Block");
+    ui->ribbonTabWidget->addButton("Insert", "Blocks", splitBlock);
+    splitBlock->setPopupMode(QToolButton::MenuButtonPopup);
+    QToolButton *mergeBlock = new QToolButton;
+    mergeBlock->setToolTip(tr("Merge multiple blocks"));
+    mergeBlock->setIcon(QIcon(":/img/img/logo_temp.png"));
+    mergeBlock->setText("Merge Blocks");
+    ui->ribbonTabWidget->addButton("Insert", "Blocks", mergeBlock);
+
+    // Subblocks: Table, Equation, Code, Typesetting
+    QToolButton *tableBlock = new QToolButton;
+    tableBlock->setToolTip(tr("Insert a table subblock"));
+    tableBlock->setIcon(QIcon(":/icons/table.png"));
+    tableBlock->setText("Table");
+    ui->ribbonTabWidget->addButton("Insert", "Subblocks", tableBlock);
+    tableBlock->setPopupMode(QToolButton::MenuButtonPopup);
+    QToolButton *equationBlock = new QToolButton;
+    equationBlock->setToolTip(tr("Insert an equation subblock"));
+    equationBlock->setIcon(QIcon(":/icons/equation.png"));
+    equationBlock->setText("Equation");
+    ui->ribbonTabWidget->addButton("Insert", "Subblocks", equationBlock);
+    QToolButton *codeBlock = new QToolButton;
+    codeBlock->setToolTip(tr("Insert a code subblock"));
+    codeBlock->setIcon(QIcon(":/icons/code.png"));
+    codeBlock->setText("Code");
+    ui->ribbonTabWidget->addButton("Insert", "Subblocks", codeBlock);
+    QToolButton *typesettingBlock = new QToolButton;
+    typesettingBlock->setToolTip(tr("Insert a typesetting-enabled subblock"));
+    typesettingBlock->setIcon(QIcon(":/img/img/logo_temp.png"));
+    typesettingBlock->setText("Typesetting");
+    ui->ribbonTabWidget->addButton("Insert", "Subblocks", typesettingBlock);
+
+    // Text: Special characters, image
+    QToolButton *specialCharacters = new QToolButton;
+    specialCharacters->setToolTip(tr("Insert special characters"));
+    specialCharacters->setIcon(QIcon(":/icons/character.png"));
+    specialCharacters->setText("Characters");
+    ui->ribbonTabWidget->addButton("Insert", "Text", specialCharacters);
+    specialCharacters->setPopupMode(QToolButton::MenuButtonPopup);
+    QToolButton *insertImage = new QToolButton;
+    insertImage->setToolTip(tr("Insert image"));
+    insertImage->setIcon(QIcon(":/icons/image.png"));
+    insertImage->setText("Image");
+    ui->ribbonTabWidget->addButton("Insert", "Text", insertImage);
+    insertImage->setPopupMode(QToolButton::MenuButtonPopup);
 
 
     // Change the border of the QTextEdit

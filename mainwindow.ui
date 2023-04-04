@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>914</width>
-    <height>564</height>
+    <width>1000</width>
+    <height>750</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -39,7 +39,7 @@
        </sizepolicy>
       </property>
       <property name="currentIndex">
-       <number>1</number>
+       <number>0</number>
       </property>
       <widget class="QWidget" name="welcomePage">
        <widget class="QWidget" name="gridLayoutWidget">
@@ -47,11 +47,61 @@
          <rect>
           <x>30</x>
           <y>20</y>
-          <width>256</width>
-          <height>68</height>
+          <width>274</width>
+          <height>93</height>
          </rect>
         </property>
         <layout class="QGridLayout" name="logoLayout">
+         <item row="0" column="2">
+          <layout class="QVBoxLayout" name="logoTextLayout">
+           <property name="spacing">
+            <number>0</number>
+           </property>
+           <item>
+            <widget class="QLabel" name="logoLabelText">
+             <property name="enabled">
+              <bool>true</bool>
+             </property>
+             <property name="sizePolicy">
+              <sizepolicy hsizetype="Minimum" vsizetype="Maximum">
+               <horstretch>0</horstretch>
+               <verstretch>0</verstretch>
+              </sizepolicy>
+             </property>
+             <property name="font">
+              <font>
+               <pointsize>35</pointsize>
+              </font>
+             </property>
+             <property name="lineWidth">
+              <number>1</number>
+             </property>
+             <property name="text">
+              <string>NoteBlock</string>
+             </property>
+             <property name="alignment">
+              <set>Qt::AlignBottom|Qt::AlignLeading|Qt::AlignLeft</set>
+             </property>
+            </widget>
+           </item>
+           <item>
+            <spacer name="verticalSpacer">
+             <property name="orientation">
+              <enum>Qt::Vertical</enum>
+             </property>
+             <property name="sizeType">
+              <enum>QSizePolicy::Fixed</enum>
+             </property>
+             <property name="sizeHint" stdset="0">
+              <size>
+               <width>60</width>
+               <height>4</height>
+              </size>
+             </property>
+            </spacer>
+           </item>
+          </layout>
+         </item>
          <item row="0" column="0">
           <widget class="QLabel" name="logoLabelPic">
            <property name="sizePolicy">
@@ -86,64 +136,14 @@
            </property>
           </widget>
          </item>
-         <item row="0" column="2">
-          <layout class="QVBoxLayout" name="logoTextLayout">
-           <property name="spacing">
-            <number>0</number>
-           </property>
-           <item>
-            <widget class="QLabel" name="logoLabelText">
-             <property name="enabled">
-              <bool>true</bool>
-             </property>
-             <property name="sizePolicy">
-              <sizepolicy hsizetype="Minimum" vsizetype="Maximum">
-               <horstretch>0</horstretch>
-               <verstretch>0</verstretch>
-              </sizepolicy>
-             </property>
-             <property name="font">
-              <font>
-               <pointsize>27</pointsize>
-              </font>
-             </property>
-             <property name="lineWidth">
-              <number>1</number>
-             </property>
-             <property name="text">
-              <string>NoteBlock</string>
-             </property>
-             <property name="alignment">
-              <set>Qt::AlignBottom|Qt::AlignLeading|Qt::AlignLeft</set>
-             </property>
-            </widget>
-           </item>
-           <item>
-            <spacer name="verticalSpacer">
-             <property name="orientation">
-              <enum>Qt::Vertical</enum>
-             </property>
-             <property name="sizeType">
-              <enum>QSizePolicy::Fixed</enum>
-             </property>
-             <property name="sizeHint" stdset="0">
-              <size>
-               <width>60</width>
-               <height>4</height>
-              </size>
-             </property>
-            </spacer>
-           </item>
-          </layout>
-         </item>
         </layout>
        </widget>
        <widget class="QFrame" name="templateFrame">
         <property name="geometry">
          <rect>
           <x>30</x>
-          <y>120</y>
-          <width>517</width>
+          <y>150</y>
+          <width>521</width>
           <height>111</height>
          </rect>
         </property>
@@ -279,14 +279,14 @@
         <property name="geometry">
          <rect>
           <x>30</x>
-          <y>95</y>
-          <width>108</width>
-          <height>22</height>
+          <y>120</y>
+          <width>130</width>
+          <height>26</height>
          </rect>
         </property>
         <property name="font">
          <font>
-          <pointsize>12</pointsize>
+          <pointsize>14</pointsize>
          </font>
         </property>
         <property name="text">
@@ -297,14 +297,14 @@
         <property name="geometry">
          <rect>
           <x>30</x>
-          <y>240</y>
-          <width>141</width>
-          <height>22</height>
+          <y>270</y>
+          <width>156</width>
+          <height>26</height>
          </rect>
         </property>
         <property name="font">
          <font>
-          <pointsize>12</pointsize>
+          <pointsize>14</pointsize>
          </font>
         </property>
         <property name="text">
@@ -315,7 +315,7 @@
         <property name="geometry">
          <rect>
           <x>30</x>
-          <y>270</y>
+          <y>300</y>
           <width>521</width>
           <height>241</height>
          </rect>
@@ -337,6 +337,11 @@
            <width>331</width>
            <height>31</height>
           </rect>
+         </property>
+         <property name="font">
+          <font>
+           <pointsize>12</pointsize>
+          </font>
          </property>
          <property name="text">
           <string>placeholder; icon | name, path, last opened</string>
@@ -442,7 +447,7 @@
     <rect>
      <x>0</x>
      <y>0</y>
-     <width>914</width>
+     <width>1000</width>
      <height>21</height>
     </rect>
    </property>
