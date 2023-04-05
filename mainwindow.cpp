@@ -50,6 +50,28 @@ MainWindow::MainWindow(QWidget *parent)
     connect(ui->templateThree, &QPushButton::clicked, this, [this]{ui->stackedWidget->setCurrentIndex(1); ui->ribbonDockWidget->setVisible(true);});
     connect(ui->templateNone, &QPushButton::clicked, this, [this]{ui->stackedWidget->setCurrentIndex(1); ui->ribbonDockWidget->setVisible(true);});
 
+    // Create Text Document for the editor
+    // Establish page size
+    QTextDocument *textDocument = new QTextDocument;
+    ui->textEdit->setDocument(textDocument);
+    QPrinter printer;
+    printer.setPageSize(QPageSize(QPageSize::Letter));
+    textDocument->setPageSize(printer.pageRect(QPrinter::DevicePixel).size());
+    qreal dpi = printer.resolution();
+    ui->textEdit->setFixedSize(textDocument->pageSize().toSize());
+    textDocument->setDocumentMargin(dpi); // Establish margin
+
+    // Sync QTextEdit Scroll bar with the one on the side of the screen
+    /// \todo: make this a scroll area
+    connect(ui->textEdit->verticalScrollBar(), &QScrollBar::rangeChanged, this, [=](int min, int max) {ui->textVerticalScrollBar->setRange(min, max);
+                                                                                  ui->textVerticalScrollBar->setValue(ui->textEdit->verticalScrollBar()->value());
+                                                                                });
+    connect(ui->textVerticalScrollBar, &QScrollBar::valueChanged, this, [=](int value) {ui->textEdit->verticalScrollBar()->setValue(value);
+                                                                                  ui->textVerticalScrollBar->setPageStep(ui->textEdit->verticalScrollBar()->pageStep());
+                                                                                  ui->textVerticalScrollBar->setSingleStep(ui->textEdit->verticalScrollBar()->singleStep());
+                                                                                 });
+    connect(ui->textVerticalScrollBar, SIGNAL(valueChanged(int)), ui->textEdit->verticalScrollBar(), SLOT(setValue(int)));
+
     /*
      *
      * RIBBON
@@ -149,22 +171,27 @@ MainWindow::MainWindow(QWidget *parent)
     QToolButton *boldButton = new QToolButton;
     boldButton->setToolTip(tr("Bold\n(Ctrl+B)"));
     boldButton->setIcon(QIcon(":/icons/bold.png"));
+    boldButton->setCheckable(true);
     ui->ribbonTabWidget->addSmallButton("Home", "Font", boldButton, 1, 0);
     QToolButton *italicButton = new QToolButton;
     italicButton->setToolTip(tr("Italics\n(Ctrl+I)"));
     italicButton->setIcon(QIcon(":/icons/italic.png"));
+    italicButton->setCheckable(true);
     ui->ribbonTabWidget->addSmallButton("Home", "Font", italicButton, 1, 1);
     QToolButton *underlineButton = new QToolButton;
     underlineButton->setToolTip(tr("Underline\n(Ctrl+U)"));
     underlineButton->setIcon(QIcon(":/icons/underline.png"));
+    underlineButton->setCheckable(true);
     ui->ribbonTabWidget->addSmallButton("Home", "Font", underlineButton, 1, 2);
     QToolButton *superscriptButton = new QToolButton;
     superscriptButton->setToolTip(tr("Superscript\n(Ctrl+Shift+.)"));
     superscriptButton->setIcon(QIcon(":/icons/superscript.png"));
+    superscriptButton->setCheckable(true);
     ui->ribbonTabWidget->addSmallButton("Home", "Font", superscriptButton, 0, 5);
     QToolButton *subscriptButton = new QToolButton;
     subscriptButton->setToolTip(tr("Subscript\n(Ctrl+Shift+,)"));
     subscriptButton->setIcon(QIcon(":/icons/subscript.png"));
+    subscriptButton->setCheckable(true);
     ui->ribbonTabWidget->addSmallButton("Home", "Font", subscriptButton, 1, 5);
     QToolButton *textColorButton = new QToolButton;
     textColorButton->setToolTip(tr("Change Text Color"));
@@ -176,6 +203,49 @@ MainWindow::MainWindow(QWidget *parent)
     textHighlightButton->setIcon(QIcon(":/img/img/logo_temp.png"));
     ui->ribbonTabWidget->addSmallButton("Home", "Font", textHighlightButton, 1, 4);
     textHighlightButton->setPopupMode(QToolButton::MenuButtonPopup);
+
+    // Add functionality to buttons
+    connect(boldButton, &QPushButton::clicked, this, [=]{
+        QTextCharFormat format;
+        QTextCursor textCursor = ui->textEdit->textCursor();
+        format.setFontWeight(boldButton->isChecked() ? QFont::Bold : QFont::Normal);
+        textCursor.mergeCharFormat(format);
+        ui->textEdit->mergeCurrentCharFormat(format);
+    });
+    connect(italicButton, &QPushButton::clicked, this, [=]{
+        QTextCharFormat format;
+        QTextCursor textCursor = ui->textEdit->textCursor();
+        format.setFontItalic(italicButton->isChecked());
+        textCursor.mergeCharFormat(format);
+        ui->textEdit->mergeCurrentCharFormat(format);
+    });
+    connect(underlineButton, &QPushButton::clicked, this, [=]{
+        QTextCharFormat format;
+        QTextCursor textCursor = ui->textEdit->textCursor();
+        format.setFontUnderline(underlineButton->isChecked());
+        textCursor.mergeCharFormat(format);
+        ui->textEdit->mergeCurrentCharFormat(format);
+    });
+    connect(superscriptButton, &QPushButton::clicked, this, [=]{
+        QTextCharFormat format;
+        QTextCursor textCursor = ui->textEdit->textCursor();
+        if(subscriptButton->isChecked()) {
+            subscriptButton->setChecked(false);
+        }
+        format.setVerticalAlignment(superscriptButton->isChecked() ? QTextCharFormat::AlignSuperScript : QTextCharFormat::AlignNormal);
+        textCursor.mergeCharFormat(format);
+        ui->textEdit->mergeCurrentCharFormat(format);
+    });
+    connect(subscriptButton, &QPushButton::clicked, this, [=]{
+        QTextCharFormat format;
+        QTextCursor textCursor = ui->textEdit->textCursor();
+        if(superscriptButton->isChecked()) {
+            superscriptButton->setChecked(false);
+        }
+        format.setVerticalAlignment(subscriptButton->isChecked() ? QTextCharFormat::AlignSubScript : QTextCharFormat::AlignNormal);
+        textCursor.mergeCharFormat(format);
+        ui->textEdit->mergeCurrentCharFormat(format);
+    });
 
     // Paragraph: Numbered/Bulluted/Check List, Alignment (left, center, right, justify), Indent Left/Right
     QToolButton *numberedList = new QToolButton;
@@ -300,27 +370,6 @@ MainWindow::MainWindow(QWidget *parent)
                                 "}");
 
 
-    // Create Text Document for the editor
-    // Establish page size
-    QTextDocument *textDocument = new QTextDocument;
-    ui->textEdit->setDocument(textDocument);
-    QPrinter printer;
-    printer.setPageSize(QPageSize(QPageSize::Letter));
-    textDocument->setPageSize(printer.pageRect(QPrinter::DevicePixel).size());
-    qreal dpi = printer.resolution();
-    ui->textEdit->setFixedSize(textDocument->pageSize().toSize());
-    textDocument->setDocumentMargin(dpi); // Establish margin
-
-    // Sync QTextEdit Scroll bar with the one on the side of the screen
-    /// \todo: make this a scroll area
-    connect(ui->textEdit->verticalScrollBar(), &QScrollBar::rangeChanged, this, [=](int min, int max) {ui->textVerticalScrollBar->setRange(min, max);
-                                                                                  ui->textVerticalScrollBar->setValue(ui->textEdit->verticalScrollBar()->value());
-                                                                                });
-    connect(ui->textVerticalScrollBar, &QScrollBar::valueChanged, this, [=](int value) {ui->textEdit->verticalScrollBar()->setValue(value);
-                                                                                  ui->textVerticalScrollBar->setPageStep(ui->textEdit->verticalScrollBar()->pageStep());
-                                                                                  ui->textVerticalScrollBar->setSingleStep(ui->textEdit->verticalScrollBar()->singleStep());
-                                                                                 });
-    connect(ui->textVerticalScrollBar, SIGNAL(valueChanged(int)), ui->textEdit->verticalScrollBar(), SLOT(setValue(int)));
 
 
 }
