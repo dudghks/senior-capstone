@@ -17,6 +17,9 @@ MainWindow::MainWindow(QWidget *parent)
 {
     ui->setupUi(this);
 
+    // Make sure the app starts on the welcome page
+    ui->stackedWidget->setCurrentIndex(0);
+
     // Set background color
     ui->stackedWidget->setStyleSheet("QWidget#documentPage, QWidget#welcomePage {"
                                      "  background-color: #EAEAEA;"
@@ -50,27 +53,11 @@ MainWindow::MainWindow(QWidget *parent)
     connect(ui->templateThree, &QPushButton::clicked, this, [this]{ui->stackedWidget->setCurrentIndex(1); ui->ribbonDockWidget->setVisible(true);});
     connect(ui->templateNone, &QPushButton::clicked, this, [this]{ui->stackedWidget->setCurrentIndex(1); ui->ribbonDockWidget->setVisible(true);});
 
-    // Create Text Document for the editor
-    // Establish page size
-    QTextDocument *textDocument = new QTextDocument;
-    ui->textEdit->setDocument(textDocument);
-    QPrinter printer;
-    printer.setPageSize(QPageSize(QPageSize::Letter));
-    textDocument->setPageSize(printer.pageRect(QPrinter::DevicePixel).size());
-    qreal dpi = printer.resolution();
-    ui->textEdit->setFixedSize(textDocument->pageSize().toSize());
-    textDocument->setDocumentMargin(dpi); // Establish margin
+    // Set up document
+    ui->textEdit->setPixelPageSize(QSizeF(8.5, 11), true);
+    ui->textEdit->setPixelPageMargins(QMarginsF(1, 1, 1, 1), true);
+    ui->textEdit->setPageBreakGap(20);
 
-    // Sync QTextEdit Scroll bar with the one on the side of the screen
-    /// \todo: make this a scroll area
-    connect(ui->textEdit->verticalScrollBar(), &QScrollBar::rangeChanged, this, [=](int min, int max) {ui->textVerticalScrollBar->setRange(min, max);
-                                                                                  ui->textVerticalScrollBar->setValue(ui->textEdit->verticalScrollBar()->value());
-                                                                                });
-    connect(ui->textVerticalScrollBar, &QScrollBar::valueChanged, this, [=](int value) {ui->textEdit->verticalScrollBar()->setValue(value);
-                                                                                  ui->textVerticalScrollBar->setPageStep(ui->textEdit->verticalScrollBar()->pageStep());
-                                                                                  ui->textVerticalScrollBar->setSingleStep(ui->textEdit->verticalScrollBar()->singleStep());
-                                                                                 });
-    connect(ui->textVerticalScrollBar, SIGNAL(valueChanged(int)), ui->textEdit->verticalScrollBar(), SLOT(setValue(int)));
 
     /*
      *
@@ -247,7 +234,7 @@ MainWindow::MainWindow(QWidget *parent)
         ui->textEdit->mergeCurrentCharFormat(format);
     });
 
-    // Paragraph: Numbered/Bulluted/Check List, Alignment (left, center, right, justify), Indent Left/Right
+    // Paragraph: Numbered/Bulleted/Check List, Alignment (left, center, right, justify), Indent Left/Right
     QToolButton *numberedList = new QToolButton;
     numberedList->setToolTip(tr("Numbered List\n(Ctrl+Shift+7"));
     numberedList->setIcon(QIcon(":/icons/numbers.png"));
