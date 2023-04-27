@@ -30,7 +30,7 @@ Ribbon::Ribbon(QWidget *parent)
   QString styleSheetText = QString(
     "QTabWidget::pane {"
     "  border-top: 1px solid rgb(%4, %5, %6);"
-    "  border-bottom: 1px solid rgb(%4, %5, %6);"
+    "  border-bottom: none;"
     "  position: absolute;"
     "  top: -1px;"
     "}"

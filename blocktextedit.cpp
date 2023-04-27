@@ -137,7 +137,7 @@ void BlockTextEdit::updateViewportMargins() {
 
 void BlockTextEdit::updateVerticalScrollRange() {
     const int pageHeight = m_pixelPageSize.height();
-    const int documentHeight = (pageHeight + m_pageBreakGap) * document()->pageCount();
+    const int documentHeight = (pageHeight + m_pageBreakGap) * document()->pageCount() -  1;
     const int maximumValue = documentHeight - viewport()->height();
     if (verticalScrollBar()->maximum() != maximumValue) {
         verticalScrollBar()->setMaximum(maximumValue);
@@ -151,9 +151,8 @@ void BlockTextEdit::paintPagesView() {
     qreal pageHeight = m_pixelPageSize.height() + m_pageBreakGap;
 
     QPainter p(viewport());
-    QPen spacePen(palette().window(), m_pageBreakGap);
+    QPen spacePen(QColor(234, 234, 234), m_pageBreakGap);
     QPen borderPen(palette().dark(), 1);
-    QPen testPen(palette().dark(), 5);
 
     // Find the current height of top page on the screen
     qreal curHeight = pageHeight - (verticalScrollBar()->value() % (int)pageHeight);
@@ -167,7 +166,7 @@ void BlockTextEdit::paintPagesView() {
     // Draw the top border
     if (curHeight - pageHeight >= 0) {
         p.setPen(borderPen);
-        p.drawLine(0, curHeight - pageHeight + 1, x, curHeight - pageHeight + 1);
+        p.drawLine(0, curHeight - pageHeight, x, curHeight - pageHeight);
     }
 
     // Draw page breaks and borders for each page visible
@@ -198,13 +197,12 @@ void BlockTextEdit::paintPagesView() {
         // Left border
         p.drawLine(0 - horizontalDelta, curHeight-pageHeight, 0 - horizontalDelta, height());
         // Right border
-        p.drawLine(x - horizontalDelta, curHeight-pageHeight, x - horizontalDelta, height());
+        p.drawLine(x - horizontalDelta + 1, curHeight-pageHeight, x - horizontalDelta + 1, height());
     }
 }
 
 void BlockTextEdit::aboutVerticalScrollRangeChanged(int _minimum, int _maximum) {
     Q_UNUSED(_minimum)
-
     updateViewportMargins();
     int scrollValue = verticalScrollBar()->value();
 

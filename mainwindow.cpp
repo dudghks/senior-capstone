@@ -5,17 +5,22 @@
 #include <QPixmap>
 #include <QPageSize>
 #include <QSizeF>
-#include <QScrollBar>
 #include <QTextCursor>
 #include <QPrinter>
 #include <QFontComboBox>
 #include <QSpinBox>
+#include <QPushButton>
 
 MainWindow::MainWindow(QWidget *parent)
     : QMainWindow(parent)
     , ui(new Ui::MainWindow)
 {
     ui->setupUi(this);
+
+    // TEST INSERT FRAME
+    connect(ui->testPushButton, &QPushButton::clicked, this, [this]{
+
+    });
 
     // Make sure the app starts on the welcome page
     ui->stackedWidget->setCurrentIndex(0);
@@ -54,6 +59,7 @@ MainWindow::MainWindow(QWidget *parent)
     connect(ui->templateNone, &QPushButton::clicked, this, [this]{ui->stackedWidget->setCurrentIndex(1); ui->ribbonDockWidget->setVisible(true);});
 
     // Set up document
+    ui->textEdit->setVerticalScrollBarPolicy(Qt::ScrollBarAlwaysOn);
     ui->textEdit->setPixelPageSize(QSizeF(8.5, 11), true);
     ui->textEdit->setPixelPageMargins(QMarginsF(1, 1, 1, 1), true);
     ui->textEdit->setPageBreakGap(20);
@@ -353,7 +359,6 @@ MainWindow::MainWindow(QWidget *parent)
     // Change the border of the QTextEdit
     ui->textEdit->setStyleSheet("QTextEdit {"
                                 "   border: 1px solid #C0C0C0;"
-                                "   background: #FFFFFF"
                                 "}");
 
 
