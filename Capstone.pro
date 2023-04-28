@@ -1,5 +1,7 @@
 QT       += core gui
 QT       += printsupport
+QT       += widgets
+
 greaterThan(QT_MAJOR_VERSION, 4): QT += widgets
 
 CONFIG += c++17
@@ -11,6 +13,7 @@ CONFIG += c++17
 SOURCES += \
     equationsubblock.cpp \
     blocktextedit.cpp \
+    equationsubblockformat.cpp \
     main.cpp \
     mainwindow.cpp \
     ribbon.cpp \
@@ -21,6 +24,7 @@ SOURCES += \
 HEADERS += \
     blocktextedit.h \
     equationsubblock.h \
+    equationsubblockformat.h \
     mainwindow.h \
     ribbon.h \
     ribbonbuttongroup.h \

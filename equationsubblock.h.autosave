@@ -9,6 +9,9 @@ class EquationSubBlock : public QTextFrame
 
 public:
     EquationSubBlock(QTextDocument* doc);
+    QPoint globalPosition() {
+        
+    }
 
 private:
     QToolButton* m_editButton;

@@ -17,10 +17,6 @@ MainWindow::MainWindow(QWidget *parent)
 {
     ui->setupUi(this);
 
-    // TEST INSERT FRAME
-    connect(ui->testPushButton, &QPushButton::clicked, this, [this]{
-
-    });
 
     // Make sure the app starts on the welcome page
     ui->stackedWidget->setCurrentIndex(0);
@@ -363,6 +359,11 @@ MainWindow::MainWindow(QWidget *parent)
 
 
 
+    // TEST INSERT FRAME
+//    connect(equationBlock, &QPushButton::clicked, this, [=]{
+//        QTextCursor cursor = ui->textEdit->textCursor();
+//        cursor.insertFrame();
+//    });
 
 }
 
