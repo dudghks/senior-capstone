@@ -8,7 +8,8 @@
 #include <QSizeF>
 #include <QMarginsF>
 #include <QTextEdit>
-
+#include "codesubblock.h"
+#include "codesubblockhighlighter.h"
 class BlockTextEdit : public QTextEdit
 {
     Q_OBJECT
@@ -34,6 +35,10 @@ public:
      * @brief Access method for Document Page Gaps (Pixels)
      */
     void setPageBreakGap(qreal _pageBreakGap, bool _inches = false);
+
+public slots:
+    void insertCodeBlock(QWidget* _centralwidget);
+
 protected:
     /**
      * @brief Overridden for correct document and page layout drawing
@@ -81,6 +86,7 @@ private:
      */
     qreal m_pageBreakGap;
 
+    CodeSubblockHighlighter m_codeHighlighter;
 
 private slots:
     /**

@@ -335,7 +335,11 @@ MainWindow::MainWindow(QWidget *parent)
     typesettingBlock->setToolTip(tr("Insert a typesetting-enabled subblock"));
     typesettingBlock->setIcon(QIcon(":/img/img/logo_temp.png"));
     typesettingBlock->setText("Typesetting");
-    ui->ribbonTabWidget->addButton("Insert", "Subblocks", typesettingBlock);
+    ui->ribbonTabWidget->addButton("Insert", "Subblo;cks", typesettingBlock);
+
+    connect(codeBlock, &QToolButton::clicked, this, [=]() {
+        ui->textEdit->insertCodeBlock(ui->centralwidget);
+    });
 
     // Text: Special characters, image
     QToolButton *specialCharacters = new QToolButton;

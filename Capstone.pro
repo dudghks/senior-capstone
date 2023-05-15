@@ -11,9 +11,10 @@ CONFIG += c++17
 #DEFINES += QT_DISABLE_DEPRECATED_BEFORE=0x060000    # disables all the APIs deprecated before Qt 6.0.0
 
 SOURCES += \
-    equationsubblock.cpp \
     blocktextedit.cpp \
-    equationsubblockformat.cpp \
+    codesubblock.cpp \
+    codesubblockhighlighter.cpp \
+    codesubblocksettings.cpp \
     main.cpp \
     mainwindow.cpp \
     ribbon.cpp \
@@ -23,8 +24,9 @@ SOURCES += \
 
 HEADERS += \
     blocktextedit.h \
-    equationsubblock.h \
-    equationsubblockformat.h \
+    codesubblock.h \
+    codesubblockhighlighter.h \
+    codesubblocksettings.h \
     mainwindow.h \
     ribbon.h \
     ribbonbuttongroup.h \

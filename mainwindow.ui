@@ -360,7 +360,7 @@
         <property name="bottomMargin">
          <number>0</number>
         </property>
-        <item row="1" column="0">
+        <item row="0" column="0">
          <widget class="BlockTextEdit" name="textEdit">
           <property name="sizePolicy">
            <sizepolicy hsizetype="Expanding" vsizetype="Expanding">
@@ -391,13 +391,6 @@
           </property>
           <property name="sizeAdjustPolicy">
            <enum>QAbstractScrollArea::AdjustToContents</enum>
-          </property>
-         </widget>
-        </item>
-        <item row="0" column="0">
-         <widget class="QPushButton" name="testPushButton">
-          <property name="text">
-           <string>Test (insert frame)</string>
           </property>
          </widget>
         </item>

@@ -1,8 +1,9 @@
 // Multi-page display code adapted from @dimkanovikov on GitHub
 // https://github.com/dimkanovikov/PagesTextEdit
-// Comments translated using Google Translate with some changes
+// ^ Comments translated using Google Translate with some changes
 
 #include "blocktextedit.h"
+#include "codesubblock.h"
 
 #include <QScreen>
 #include <QApplication>
@@ -10,9 +11,12 @@
 #include <QScrollBar>
 #include <QPainter>
 #include <QTextFrame>
+#include <QToolButton>
+#include <QLayout>
+#include <QPushButton>
 
 BlockTextEdit::BlockTextEdit(QWidget *parent) : QTextEdit(parent),
-    m_document()
+    m_document(), m_codeHighlighter(m_document)
 {
     // Prevents the document from automatically changing
     aboutDocumentChanged();
@@ -249,4 +253,76 @@ void BlockTextEdit::aboutUpdateDocumentGeometry()
         rootFrameFormat.setBottomMargin(rootFrameMargins.bottom());
         document()->rootFrame()->setFrameFormat(rootFrameFormat);
     }
+}
+
+void BlockTextEdit::insertCodeBlock(QWidget* _centralwidget) {
+
+    // Set up subblock format
+    QTextFrameFormat format;
+    format.setBorder(1);
+    format.setBorderStyle(QTextFrameFormat::BorderStyle_Dashed);
+
+    // Insert new frame
+    textCursor().insertFrame(format);
+    QTextFrame* newFrame = textCursor().currentFrame();
+
+    // Create helper class
+    CodeSubblock newCodeBlock(newFrame);
+
+    // Make subblock button visible
+    _centralwidget->layout()->addWidget(newCodeBlock.settingsButton());
+    newCodeBlock.settingsButton()->setParent(this);
+
+    // Set initial button positions
+
+    // Get the bounding rectangle of the frame
+    QRectF frameRect = document()->documentLayout()->frameBoundingRect(newFrame);
+
+    // Convert the frame-bounding rectangle coordinate system to the one of the central widget
+    QPointF frameRectTopRight = viewport()->mapTo(this, frameRect.topLeft());
+    frameRectTopRight.setY(frameRectTopRight.y() - verticalScrollBar()->value());
+    frameRectTopRight.setX(frameRectTopRight.x() + frameRect.width());
+
+    // Move the button
+    QRectF border = QRectF(frameRectTopRight, QSizeF(20, 20));
+    newCodeBlock.settingsButton()->setGeometry(border.toRect());
+    border.moveRight(border.right() + 25);
+    newCodeBlock.settingsButton()->repaint();
+
+    m_codeHighlighter.addTargetBlock(newCodeBlock);
+
+    // Keep the button on top of the frame. Adjust for position, as long as frame is on screen.
+    connect(verticalScrollBar(), &QScrollBar::valueChanged, this, [this, newCodeBlock, newFrame]() {
+        // Get the bounding rectangle of the frame
+        QRectF frameRect = document()->documentLayout()->frameBoundingRect(newFrame);
+
+        // Convert the frame-bounding rectangle coordinate system to the one of the central widget
+        QPointF frameRectTopRight = viewport()->mapTo(this, frameRect.topLeft());
+        frameRectTopRight.setY(frameRectTopRight.y() - verticalScrollBar()->value());
+        frameRectTopRight.setX(frameRectTopRight.x() + frameRect.width());
+
+        // If the top of the frame is partially off screen, move button downwards, lowest point is the bottom of the frame
+        if(frameRectTopRight.y() <= 0 && frameRectTopRight.y() >= -frameRect.height() + newCodeBlock.settingsButton()->height()) {
+            frameRectTopRight.setY(0);
+        } else if(frameRectTopRight.y() <= 0 && frameRectTopRight.y() >= -frameRect.height()) {
+            frameRectTopRight.setY(frameRectTopRight.y() + frameRect.height() - newCodeBlock.settingsButton()->height());
+        }
+
+        // Move the button
+        QRectF border = QRectF(frameRectTopRight, QSizeF(20, 20));
+        newCodeBlock.settingsButton()->setGeometry(border.toRect());
+        border.moveRight(border.right() + 25);
+        newCodeBlock.settingsButton()->repaint();
+    });
+
+    // Buttons only visible when frame is selected
+    connect(this, &QTextEdit::cursorPositionChanged, this, [this, newCodeBlock]() {
+        if(textCursor().currentFrame() == newCodeBlock.frame()) {
+            newCodeBlock.settingsButton()->setVisible(true);
+        } else {
+            newCodeBlock.settingsButton()->setVisible(false);
+        }
+    });
+
+    connect(newCodeBlock.settingsButton(), &QPushButton::clicked, this, [newCodeBlock]() mutable {newCodeBlock.openSettingsMenu();});
 }
