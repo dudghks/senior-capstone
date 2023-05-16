@@ -10,7 +10,7 @@ class CodeSubblockHighlighter : QSyntaxHighlighter
 {
     Q_OBJECT
 public:
-    CodeSubblockHighlighter(QTextDocument* _document);
+    CodeSubblockHighlighter(QTextDocument* _document = nullptr);
     QList<CodeSubblock> targetBlocks();
     void addTargetBlock(CodeSubblock _newBlock);
     void removeTargetBlock(CodeSubblock _targetBlock);

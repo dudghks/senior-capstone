@@ -8,8 +8,8 @@
 #include <QSizeF>
 #include <QMarginsF>
 #include <QTextEdit>
-#include "codesubblock.h"
 #include "codesubblockhighlighter.h"
+
 class BlockTextEdit : public QTextEdit
 {
     Q_OBJECT

@@ -4,6 +4,7 @@
 
 #include "blocktextedit.h"
 #include "codesubblock.h"
+#include "subblockuserdata.h"
 
 #include <QScreen>
 #include <QApplication>
@@ -16,7 +17,7 @@
 #include <QPushButton>
 
 BlockTextEdit::BlockTextEdit(QWidget *parent) : QTextEdit(parent),
-    m_document(), m_codeHighlighter(m_document)
+    m_document(), m_codeHighlighter(this->document())
 {
     // Prevents the document from automatically changing
     aboutDocumentChanged();
@@ -28,6 +29,8 @@ BlockTextEdit::BlockTextEdit(QWidget *parent) : QTextEdit(parent),
     // Custom setting of the scroll interval
     connect(verticalScrollBar(), SIGNAL(rangeChanged(int,int)),
         this, SLOT(aboutVerticalScrollRangeChanged(int,int)));
+
+
 }
 
 
@@ -265,7 +268,7 @@ void BlockTextEdit::insertCodeBlock(QWidget* _centralwidget) {
     // Insert new frame
     textCursor().insertFrame(format);
     QTextFrame* newFrame = textCursor().currentFrame();
-
+    textCursor().block().setUserData(new SubblockUserData(1));
     // Create helper class
     CodeSubblock newCodeBlock(newFrame);
 

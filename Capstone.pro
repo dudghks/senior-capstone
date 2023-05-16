@@ -20,7 +20,8 @@ SOURCES += \
     ribbon.cpp \
     ribbonbuttongroup.cpp \
     ribbonsmallbuttonsgroup.cpp \
-    ribbontabcontent.cpp
+    ribbontabcontent.cpp \
+    subblockuserdata.cpp
 
 HEADERS += \
     blocktextedit.h \
@@ -31,7 +32,8 @@ HEADERS += \
     ribbon.h \
     ribbonbuttongroup.h \
     ribbonsmallbuttonsgroup.h \
-    ribbontabcontent.h
+    ribbontabcontent.h \
+    subblockuserdata.h
 
 FORMS += \
     mainwindow.ui \
