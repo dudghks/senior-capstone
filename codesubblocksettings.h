@@ -1,7 +1,7 @@
 #ifndef CODESUBBLOCKSETTINGS_H
 #define CODESUBBLOCKSETTINGS_H
 
-#include "codesubblock.h"
+//#include "codesubblock.h"
 #include <QDialog>
 #include <QLabel>
 #include <QPushButton>
@@ -11,16 +11,18 @@
 #include <QDialogButtonBox>
 #include <QColorDialog>
 #include <QSpinBox>
+#include <QTextFrameFormat>
+#include <QTextFrame>
 
 class CodeSubblockSettings : public QDialog
 {
 public:
-    CodeSubblockSettings(CodeSubblock* target = nullptr, QWidget* parent = nullptr);
+    CodeSubblockSettings(QTextFrame* target, QWidget* parent = nullptr);
 
 private:
     QTextFrameFormat m_oldFormat;
     QTextFrameFormat m_newFormat;
-    CodeSubblock* m_target;
+    QTextFrame* m_target;
 
     QVBoxLayout *verticalLayout;
     QFormLayout *formLayout;

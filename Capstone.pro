@@ -12,7 +12,6 @@ CONFIG += c++17
 
 SOURCES += \
     blocktextedit.cpp \
-    codesubblock.cpp \
     codesubblockhighlighter.cpp \
     codesubblocksettings.cpp \
     main.cpp \
@@ -25,7 +24,6 @@ SOURCES += \
 
 HEADERS += \
     blocktextedit.h \
-    codesubblock.h \
     codesubblockhighlighter.h \
     codesubblocksettings.h \
     mainwindow.h \

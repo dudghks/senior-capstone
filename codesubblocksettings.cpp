@@ -1,5 +1,5 @@
 #include "codesubblocksettings.h"
-#include "codesubblock.h"
+//#include "codesubblock.h"
 
 #include <QLabel>
 #include <QPushButton>
@@ -10,8 +10,9 @@
 #include <QColorDialog>
 #include <QSpinBox>
 #include <QMetaEnum>
+#include <QTextFrame>
 
-CodeSubblockSettings::CodeSubblockSettings(CodeSubblock* target, QWidget* parent) : QDialog(parent)
+CodeSubblockSettings::CodeSubblockSettings(QTextFrame* target, QWidget* parent) : QDialog(parent)
 {
     verticalLayout = new QVBoxLayout;
     formLayout = new QFormLayout;
@@ -25,21 +26,21 @@ CodeSubblockSettings::CodeSubblockSettings(CodeSubblock* target, QWidget* parent
     borderWidthBox = new QSpinBox;
     buttonBox = new QDialogButtonBox;
 
-    m_oldFormat = target->format();
-    m_newFormat = target->format();
+    m_oldFormat = target->frameFormat();
+    m_newFormat = target->frameFormat();
     m_target = target;
 
     QStringList borderStyles = {"None", "Dotted", "Dashed", "Solid", "Double", "Dot Dash", "Dot Dot Dash", "Groove", "Ridge", "Inset", "Outset"};
     borderStyleBox->addItems(borderStyles);
 
-    borderColorButton->setPalette(m_target->format().borderBrush().color());
+    borderColorButton->setPalette(target->frameFormat().borderBrush().color());
     borderColorButton->setFlat(true);
     borderColorButton->setAutoFillBackground(true);
-    backgroundColorButton->setPalette(m_target->format().background().color());
+    backgroundColorButton->setPalette(target->frameFormat().background().color());
     backgroundColorButton->setFlat(true);
     backgroundColorButton->setAutoFillBackground(true);
-    borderWidthBox->setValue(m_target->format().border());
-    borderStyleBox->setCurrentIndex(borderStyleToInt(m_target->format().borderStyle()));
+    borderWidthBox->setValue(target->frameFormat().border());
+    borderStyleBox->setCurrentIndex(borderStyleToInt(target->frameFormat().borderStyle()));
 
 
     setLayout(verticalLayout);
@@ -143,36 +144,36 @@ void CodeSubblockSettings::changeFormatBorderStyle(int _newFormat) {
     }
 
     m_newFormat.setBorderStyle(newStyle);
-    m_target->frame()->setFrameFormat(m_newFormat);
+    m_target->setFrameFormat(m_newFormat);
 
 }
 
 void CodeSubblockSettings::changeFormatBorderWidth(int _newWidth) {
     m_newFormat.setBorder(_newWidth);
-    m_target->frame()->setFrameFormat(m_newFormat);
+    m_target->setFrameFormat(m_newFormat);
 }
 
 void CodeSubblockSettings::changeFormatBorderColor() {
-    const QColor color = QColorDialog::getColor(m_target->frame()->frameFormat().borderBrush().color(), this, "Select Border Color");
+    const QColor color = QColorDialog::getColor(m_target->frameFormat().borderBrush().color(), this, "Select Border Color", QColorDialog::ShowAlphaChannel	);
 
     if (color.isValid()) {
-        QBrush newBrush = m_target->frame()->frameFormat().borderBrush();
+        QBrush newBrush = m_target->frameFormat().borderBrush();
         newBrush.setColor(color);
         m_newFormat.setBorderBrush(newBrush);
-        m_target->frame()->setFrameFormat(m_newFormat);
+        m_target->setFrameFormat(m_newFormat);
         borderColorButton->setPalette(color);
         borderColorButton->update();
     }
 }
 
 void CodeSubblockSettings::changeFormatBackgroundColor() {
-    const QColor color = QColorDialog::getColor(m_target->frame()->frameFormat().borderBrush().color(), this, "Select Background Color");
+    const QColor color = QColorDialog::getColor(m_target->frameFormat().borderBrush().color(), this, "Select Background Color", QColorDialog::ShowAlphaChannel	);
 
     if (color.isValid()) {
-        QBrush newBrush = m_target->frame()->frameFormat().background();
+        QBrush newBrush = m_target->frameFormat().background();
         newBrush.setColor(color);
         m_newFormat.setBackground(newBrush);
-        m_target->frame()->setFrameFormat(m_newFormat);
+        m_target->setFrameFormat(m_newFormat);
         backgroundColorButton->setPalette(color);
         backgroundColorButton->update();
     }

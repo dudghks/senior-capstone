@@ -356,12 +356,6 @@ MainWindow::MainWindow(QWidget *parent)
     insertImage->setPopupMode(QToolButton::MenuButtonPopup);
 
 
-    // Change the border of the QTextEdit
-    ui->textEdit->setStyleSheet("QTextEdit {"
-                                "   border: 1px solid #C0C0C0;"
-                                "}");
-
-
 
     // TEST INSERT FRAME
 //    connect(equationBlock, &QPushButton::clicked, this, [=]{

@@ -3,8 +3,8 @@
 // ^ Comments translated using Google Translate with some changes
 
 #include "blocktextedit.h"
-#include "codesubblock.h"
 #include "subblockuserdata.h"
+#include "codesubblocksettings.h"
 
 #include <QScreen>
 #include <QApplication>
@@ -15,6 +15,8 @@
 #include <QToolButton>
 #include <QLayout>
 #include <QPushButton>
+#include <QRegularExpression>
+#include <QRegularExpressionMatchIterator>
 
 BlockTextEdit::BlockTextEdit(QWidget *parent) : QTextEdit(parent),
     m_document(), m_codeHighlighter(this->document())
@@ -30,7 +32,7 @@ BlockTextEdit::BlockTextEdit(QWidget *parent) : QTextEdit(parent),
     connect(verticalScrollBar(), SIGNAL(rangeChanged(int,int)),
         this, SLOT(aboutVerticalScrollRangeChanged(int,int)));
 
-
+    connect(m_document, &QTextDocument::contentsChange, this, &BlockTextEdit::handleContentsChange);
 }
 
 
@@ -88,6 +90,25 @@ void BlockTextEdit::resizeEvent(QResizeEvent* _event) {
     QTextEdit::resizeEvent(_event);
 }
 
+void BlockTextEdit::keyPressEvent(QKeyEvent* _event) {
+    if(textCursor().hasSelection()) {
+        QString deletedText(textCursor().selectedText());
+        static QRegularExpression frameBoundaryExp("\\p{nChar}");
+        QRegularExpressionMatchIterator it = frameBoundaryExp.globalMatch(deletedText);
+        QStringList testCatches;
+        while(it.hasNext()) {
+            QRegularExpressionMatch match = it.next();
+            QString word = match.captured(0);
+            if(word == "\uFDD0" || word == "\uFDD1") {
+                testCatches.append(word);
+            }
+        }
+        qDebug() << deletedText;
+        qDebug() << testCatches;
+    }
+
+    QTextEdit::keyPressEvent(_event);
+}
 
 void BlockTextEdit::updateViewportMargins() {
     // Declare Margins
@@ -224,6 +245,7 @@ void BlockTextEdit::aboutDocumentChanged() {
     if (m_document != document()) {
         m_document = document();
     }
+
 }
 
 void BlockTextEdit::aboutUpdateDocumentGeometry()
@@ -258,28 +280,57 @@ void BlockTextEdit::aboutUpdateDocumentGeometry()
     }
 }
 
+void BlockTextEdit::handleContentsChange(int position, int charsRemoved, int charsAdded) {
+    Q_UNUSED(charsRemoved)
+    for(int i = 0; i < m_codeSubblocks.length(); i++) {
+        if(textCursor().currentFrame() == m_codeSubblocks.at(i).m_frame && textCursor().block().userData() != &m_codeSubblocks.at(i).m_data) {
+            SubblockUserData* subblockData = new SubblockUserData(m_codeSubblocks.at(i).m_data);
+            textCursor().block().setUserData(subblockData);
+        }
+    }
+
+    if (charsAdded > 0) {
+        QString insertedText = m_document->toPlainText().mid(position, charsAdded);
+        if (insertedText.contains('\n')) {
+            m_codeHighlighter.manualRehighlightBlock(textCursor().block());
+        }
+    }
+};
+
 void BlockTextEdit::insertCodeBlock(QWidget* _centralwidget) {
+    CodeSubblock sblock;
 
     // Set up subblock format
     QTextFrameFormat format;
     format.setBorder(1);
-    format.setBorderStyle(QTextFrameFormat::BorderStyle_Dashed);
+    format.setBorderStyle(QTextFrameFormat::BorderStyle_Solid);
+    format.setBackground(QBrush(QColor(230, 230, 230)));
 
     // Insert new frame
     textCursor().insertFrame(format);
     QTextFrame* newFrame = textCursor().currentFrame();
     textCursor().block().setUserData(new SubblockUserData(1));
-    // Create helper class
-    CodeSubblock newCodeBlock(newFrame);
 
-    // Make subblock button visible
-    _centralwidget->layout()->addWidget(newCodeBlock.settingsButton());
-    newCodeBlock.settingsButton()->setParent(this);
+
+    // Insert settings button
+    QPushButton* settingsButton = new QPushButton();
+    _centralwidget->layout()->addWidget(settingsButton);
+    settingsButton->setParent(this);
+
+
+    // Update struct
+    sblock.m_frame = newFrame;
+    sblock.m_settingsButton = settingsButton;
+    sblock.m_data.setSubblockType(1);
+    sblock.m_data.setOtherData(0);
+
+    // Add to list of buttons
+    m_codeSubblocks.append(sblock);
 
     // Set initial button positions
 
     // Get the bounding rectangle of the frame
-    QRectF frameRect = document()->documentLayout()->frameBoundingRect(newFrame);
+    QRectF frameRect = document()->documentLayout()->frameBoundingRect(sblock.m_frame);
 
     // Convert the frame-bounding rectangle coordinate system to the one of the central widget
     QPointF frameRectTopRight = viewport()->mapTo(this, frameRect.topLeft());
@@ -288,16 +339,14 @@ void BlockTextEdit::insertCodeBlock(QWidget* _centralwidget) {
 
     // Move the button
     QRectF border = QRectF(frameRectTopRight, QSizeF(20, 20));
-    newCodeBlock.settingsButton()->setGeometry(border.toRect());
+    sblock.m_settingsButton->setGeometry(border.toRect());
     border.moveRight(border.right() + 25);
-    newCodeBlock.settingsButton()->repaint();
-
-    m_codeHighlighter.addTargetBlock(newCodeBlock);
+    sblock.m_settingsButton->repaint();
 
     // Keep the button on top of the frame. Adjust for position, as long as frame is on screen.
-    connect(verticalScrollBar(), &QScrollBar::valueChanged, this, [this, newCodeBlock, newFrame]() {
+    connect(verticalScrollBar(), &QScrollBar::valueChanged, this, [this, sblock]() {
         // Get the bounding rectangle of the frame
-        QRectF frameRect = document()->documentLayout()->frameBoundingRect(newFrame);
+        QRectF frameRect = document()->documentLayout()->frameBoundingRect(sblock.m_frame);
 
         // Convert the frame-bounding rectangle coordinate system to the one of the central widget
         QPointF frameRectTopRight = viewport()->mapTo(this, frameRect.topLeft());
@@ -305,27 +354,31 @@ void BlockTextEdit::insertCodeBlock(QWidget* _centralwidget) {
         frameRectTopRight.setX(frameRectTopRight.x() + frameRect.width());
 
         // If the top of the frame is partially off screen, move button downwards, lowest point is the bottom of the frame
-        if(frameRectTopRight.y() <= 0 && frameRectTopRight.y() >= -frameRect.height() + newCodeBlock.settingsButton()->height()) {
+        if(frameRectTopRight.y() <= 0 && frameRectTopRight.y() >= -frameRect.height() + sblock.m_settingsButton->height()) {
             frameRectTopRight.setY(0);
         } else if(frameRectTopRight.y() <= 0 && frameRectTopRight.y() >= -frameRect.height()) {
-            frameRectTopRight.setY(frameRectTopRight.y() + frameRect.height() - newCodeBlock.settingsButton()->height());
+            frameRectTopRight.setY(frameRectTopRight.y() + frameRect.height() - sblock.m_settingsButton->height());
         }
 
         // Move the button
         QRectF border = QRectF(frameRectTopRight, QSizeF(20, 20));
-        newCodeBlock.settingsButton()->setGeometry(border.toRect());
+        sblock.m_settingsButton->setGeometry(border.toRect());
         border.moveRight(border.right() + 25);
-        newCodeBlock.settingsButton()->repaint();
+        sblock.m_settingsButton->repaint();
     });
 
     // Buttons only visible when frame is selected
-    connect(this, &QTextEdit::cursorPositionChanged, this, [this, newCodeBlock]() {
-        if(textCursor().currentFrame() == newCodeBlock.frame()) {
-            newCodeBlock.settingsButton()->setVisible(true);
+    connect(this, &QTextEdit::cursorPositionChanged, this, [this, sblock]() {
+        if(textCursor().currentFrame() == sblock.m_frame) {
+            sblock.m_settingsButton->setVisible(true);
         } else {
-            newCodeBlock.settingsButton()->setVisible(false);
+            sblock.m_settingsButton->setVisible(false);
         }
     });
 
-    connect(newCodeBlock.settingsButton(), &QPushButton::clicked, this, [newCodeBlock]() mutable {newCodeBlock.openSettingsMenu();});
+    // Open settings menu
+    connect(sblock.m_settingsButton, &QPushButton::clicked, this, [sblock]() mutable {
+        CodeSubblockSettings settings(sblock.m_frame);
+        settings.exec();
+    });
 }

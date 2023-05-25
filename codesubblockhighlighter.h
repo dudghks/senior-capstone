@@ -4,18 +4,13 @@
 #include <QSyntaxHighlighter>
 #include <QTextCharFormat>
 #include <QRegularExpression>
-#include "codesubblock.h"
 
 class CodeSubblockHighlighter : QSyntaxHighlighter
 {
     Q_OBJECT
 public:
     CodeSubblockHighlighter(QTextDocument* _document = nullptr);
-    QList<CodeSubblock> targetBlocks();
-    void addTargetBlock(CodeSubblock _newBlock);
-    void removeTargetBlock(CodeSubblock _targetBlock);
-    void removeTargetBlock(int _index);
-
+    void manualRehighlightBlock(const QTextBlock& block);
 protected:
     void highlightBlock(const QString &text) override;
 
@@ -36,7 +31,6 @@ private:
     QTextCharFormat m_multiLineCommentFormat;
     QTextCharFormat m_quotationFormat;
     QTextCharFormat m_functionFormat;
-    QList<CodeSubblock> m_targetBlocks;
 };
 
 #endif // CODESUBBLOCKHIGHLIGHTER_H

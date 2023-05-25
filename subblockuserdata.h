@@ -6,7 +6,7 @@
 class SubblockUserData : public QTextBlockUserData
 {
 public:
-    SubblockUserData(int _subblockType, int _otherData = -1);
+    SubblockUserData(int _subblockType = -1, int _otherData = -1);
     int subblockType();
     int otherData();
     void setSubblockType(int _newSubblockType);

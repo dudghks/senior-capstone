@@ -8,7 +8,10 @@
 #include <QSizeF>
 #include <QMarginsF>
 #include <QTextEdit>
+#include <QPushButton>
+
 #include "codesubblockhighlighter.h"
+#include "subblockuserdata.h"
 
 class BlockTextEdit : public QTextEdit
 {
@@ -43,12 +46,14 @@ protected:
     /**
      * @brief Overridden for correct document and page layout drawing
      */
-    void paintEvent(QPaintEvent* _event);
+    void paintEvent(QPaintEvent* _event) override;
 
     /**
      * @brief Overridden for correct viewport size updates
      */
-    void resizeEvent(QResizeEvent* _event);
+    void resizeEvent(QResizeEvent* _event) override;
+
+    void keyPressEvent(QKeyEvent* _event) override;
 
 private:
     /**
@@ -88,6 +93,15 @@ private:
 
     CodeSubblockHighlighter m_codeHighlighter;
 
+    struct CodeSubblock
+    {
+        QTextFrame* m_frame;
+        QPushButton* m_settingsButton;
+        SubblockUserData m_data;
+    };
+
+    QList<CodeSubblock> m_codeSubblocks;
+
 private slots:
     /**
      * @brief The vertical scrolling interval has changed
@@ -105,6 +119,8 @@ private slots:
      *          leading to undesired consequences.
      */
     void aboutUpdateDocumentGeometry();
+
+    void handleContentsChange(int position, int charsRemoved, int charsAdded);
 };
 
 #endif // BLOCKTEXTEDIT_H
