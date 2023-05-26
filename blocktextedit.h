@@ -40,6 +40,9 @@ public:
     void setPageBreakGap(qreal _pageBreakGap, bool _inches = false);
 
 public slots:
+    /**
+     * @brief Inserts a code subblock
+     */
     void insertCodeBlock(QWidget* _centralwidget);
 
 protected:
@@ -91,8 +94,14 @@ private:
      */
     qreal m_pageBreakGap;
 
+    /**
+     * @brief Syntax Highlighter for Code Subblocks
+     */
     CodeSubblockHighlighter m_codeHighlighter;
 
+    /**
+     * @brief Subblock tracking data structure
+     */
     struct CodeSubblock
     {
         QTextFrame* m_frame;
@@ -100,6 +109,9 @@ private:
         SubblockUserData m_data;
     };
 
+    /**
+     * @brief Subblock tracking
+     */
     QList<CodeSubblock> m_codeSubblocks;
 
 private slots:
@@ -120,6 +132,10 @@ private slots:
      */
     void aboutUpdateDocumentGeometry();
 
+    /**
+     * @brief Used to preserve highlighting after a newline is inserted
+     * @note Can be deleted after I rewrite subblock handling (if it works)
+     */
     void handleContentsChange(int position, int charsRemoved, int charsAdded);
 };
 

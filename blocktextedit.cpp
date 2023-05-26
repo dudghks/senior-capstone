@@ -76,7 +76,10 @@ void BlockTextEdit::setPageBreakGap(qreal _pageBreakGap, bool _inches) {
 }
 
 void BlockTextEdit::paintEvent(QPaintEvent* _event) {
+    // Make sure the scroll bar range is correct before painting to user
     updateVerticalScrollRange();
+
+    // Paints page break lines
     paintPagesView();
 
     QTextEdit::paintEvent(_event);
@@ -84,6 +87,7 @@ void BlockTextEdit::paintEvent(QPaintEvent* _event) {
 
 
 void BlockTextEdit::resizeEvent(QResizeEvent* _event) {
+    // Updates viewport and scroll bar range when the window is resized
     updateViewportMargins();
     updateVerticalScrollRange();
 
@@ -108,6 +112,11 @@ void BlockTextEdit::keyPressEvent(QKeyEvent* _event) {
     }
 
     QTextEdit::keyPressEvent(_event);
+    if(textCursor().block() == textCursor().currentFrame()->begin().currentBlock()) {
+        if(_event->key()) {
+
+        }
+    }
 }
 
 void BlockTextEdit::updateViewportMargins() {
@@ -310,7 +319,15 @@ void BlockTextEdit::insertCodeBlock(QWidget* _centralwidget) {
     textCursor().insertFrame(format);
     QTextFrame* newFrame = textCursor().currentFrame();
     textCursor().block().setUserData(new SubblockUserData(1));
-
+    textCursor().insertText("\uFDD0");
+    textCursor().block();
+    textCursor().block().setVisible(false);
+    textCursor().insertBlock();
+    textCursor().insertBlock();
+    textCursor().insertText("\uFDD1");
+    textCursor().block().setVisible(false);
+    textCursor().setPosition(textCursor().block().position() - 1);
+    update();
 
     // Insert settings button
     QPushButton* settingsButton = new QPushButton();
