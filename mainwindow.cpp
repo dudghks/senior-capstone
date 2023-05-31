@@ -338,7 +338,7 @@ MainWindow::MainWindow(QWidget *parent)
     ui->ribbonTabWidget->addButton("Insert", "Subblo;cks", typesettingBlock);
 
     connect(codeBlock, &QToolButton::clicked, this, [=]() {
-        ui->textEdit->insertCodeBlock(ui->centralwidget);
+        ui->textEdit->insertCodeBlock();
     });
 
     // Text: Special characters, image

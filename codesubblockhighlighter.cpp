@@ -1,5 +1,5 @@
 #include "codesubblockhighlighter.h"
-#include "subblockuserdata.h"
+#include "blocktextedit.h"
 
 CodeSubblockHighlighter::CodeSubblockHighlighter(QTextDocument* _document) :
     QSyntaxHighlighter(_document)
@@ -74,9 +74,10 @@ void CodeSubblockHighlighter::manualRehighlightBlock(const QTextBlock& block)
 }
 
 void CodeSubblockHighlighter::highlightBlock(const QString &text) {
-    SubblockUserData* data = static_cast<SubblockUserData*>(currentBlock().userData());
-    if(data) {
-        if(data->subblockType() == 1) {
+    // Check for the subblock marker in the data
+    QVariant data = QTextCursor(currentBlock()).currentFrame()->property("Type");
+    if(data.isValid()) {
+        if(data.toChar() == 'C') {
         //! Code from Qt Syntax Highlighter example. Reimplement as needed
 
             // setHighlighterRules(data->otherData());

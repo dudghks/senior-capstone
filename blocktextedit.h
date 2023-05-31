@@ -43,7 +43,10 @@ public slots:
     /**
      * @brief Inserts a code subblock
      */
-    void insertCodeBlock(QWidget* _centralwidget);
+    void insertCodeBlock();
+
+    void undo();
+    void redo();
 
 protected:
     /**
@@ -99,20 +102,6 @@ private:
      */
     CodeSubblockHighlighter m_codeHighlighter;
 
-    /**
-     * @brief Subblock tracking data structure
-     */
-    struct CodeSubblock
-    {
-        QTextFrame* m_frame;
-        QPushButton* m_settingsButton;
-        SubblockUserData m_data;
-    };
-
-    /**
-     * @brief Subblock tracking
-     */
-    QList<CodeSubblock> m_codeSubblocks;
 
 private slots:
     /**
