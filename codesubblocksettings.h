@@ -37,6 +37,9 @@ private:
     QDialogButtonBox *buttonBox;
     int borderStyleToInt(QTextFrameFormat::BorderStyle _input);
 
+public slots:
+    void reject() override;
+
 private slots:
     void changeFormatBorderStyle(int _newFormat);
     void changeFormatBorderWidth(int _newWidth);

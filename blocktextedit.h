@@ -45,9 +45,6 @@ public slots:
      */
     void insertCodeBlock();
 
-    void undo();
-    void redo();
-
 protected:
     /**
      * @brief Overridden for correct document and page layout drawing
@@ -103,6 +100,11 @@ private:
     CodeSubblockHighlighter m_codeHighlighter;
 
 
+    /**
+     * @brief Syntax Highlighter for Code Subblocks
+     */
+    QPushButton* m_settingsButton;
+
 private slots:
     /**
      * @brief The vertical scrolling interval has changed
@@ -122,10 +124,15 @@ private slots:
     void aboutUpdateDocumentGeometry();
 
     /**
-     * @brief Used to preserve highlighting after a newline is inserted
-     * @note Can be deleted after I rewrite subblock handling (if it works)
+     * @brief Updates subblock button positions based on the current text frame of the cursor
      */
-    void handleContentsChange(int position, int charsRemoved, int charsAdded);
+    void updateSubblockButtons();
+
+    /**
+     * @brief Opens settings menu when settings button is clicked
+     */
+    void openSubblockSettings();
+
 };
 
 #endif // BLOCKTEXTEDIT_H

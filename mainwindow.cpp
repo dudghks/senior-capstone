@@ -10,6 +10,7 @@
 #include <QFontComboBox>
 #include <QSpinBox>
 #include <QPushButton>
+#include <QColorDialog>
 
 MainWindow::MainWindow(QWidget *parent)
     : QMainWindow(parent)
@@ -156,6 +157,7 @@ MainWindow::MainWindow(QWidget *parent)
     QFontComboBox *fontBox = new QFontComboBox;
     ui->ribbonTabWidget->addSmallButton("Home", "Font", fontBox, 0, 0);
     QSpinBox *fontSizeBox = new QSpinBox;
+    fontSizeBox->setMinimum(1);
     ui->ribbonTabWidget->addSmallButton("Home", "Font", fontSizeBox, 0, 4);
     QToolButton *boldButton = new QToolButton;
     boldButton->setToolTip(tr("Bold\n(Ctrl+B)"));
@@ -186,14 +188,26 @@ MainWindow::MainWindow(QWidget *parent)
     textColorButton->setToolTip(tr("Change Text Color"));
     textColorButton->setIcon(QIcon(":/img/img/logo_temp.png"));
     ui->ribbonTabWidget->addSmallButton("Home", "Font", textColorButton, 1, 3);
-    textColorButton->setPopupMode(QToolButton::MenuButtonPopup);
     QToolButton *textHighlightButton = new QToolButton;
     textHighlightButton->setToolTip(tr("Change Text Highlight"));
     textHighlightButton->setIcon(QIcon(":/img/img/logo_temp.png"));
     ui->ribbonTabWidget->addSmallButton("Home", "Font", textHighlightButton, 1, 4);
-    textHighlightButton->setPopupMode(QToolButton::MenuButtonPopup);
 
     // Add functionality to buttons
+    connect(fontBox, &QFontComboBox::currentFontChanged, this, [=](const QFont &f){
+        QTextCharFormat format;
+        QTextCursor textCursor = ui->textEdit->textCursor();
+        format.setFont(f);
+        textCursor.mergeCharFormat(format);
+        ui->textEdit->mergeCurrentCharFormat(format);
+    });
+    connect(fontSizeBox, &QSpinBox::valueChanged, this, [=](const int i){
+        QTextCharFormat format;
+        QTextCursor textCursor = ui->textEdit->textCursor();
+        format.setFontPointSize(i);
+        textCursor.mergeCharFormat(format);
+        ui->textEdit->mergeCurrentCharFormat(format);
+    });
     connect(boldButton, &QPushButton::clicked, this, [=]{
         QTextCharFormat format;
         QTextCursor textCursor = ui->textEdit->textCursor();
@@ -234,6 +248,29 @@ MainWindow::MainWindow(QWidget *parent)
         format.setVerticalAlignment(subscriptButton->isChecked() ? QTextCharFormat::AlignSubScript : QTextCharFormat::AlignNormal);
         textCursor.mergeCharFormat(format);
         ui->textEdit->mergeCurrentCharFormat(format);
+    });
+    connect(textColorButton, &QPushButton::clicked, this, [=]{
+        QTextCharFormat format;
+        QTextCursor textCursor = ui->textEdit->textCursor();
+        const QColor color = QColorDialog::getColor(textCursor.charFormat().foreground().color(), this,
+                                                    "Select Text Color", QColorDialog::ShowAlphaChannel);
+
+        if (color.isValid()) {
+            format.setForeground(QBrush(color));
+            textCursor.mergeCharFormat(format);
+            ui->textEdit->mergeCurrentCharFormat(format);
+        }
+    });
+    connect(textHighlightButton, &QPushButton::clicked, this, [=]{
+        QTextCursor textCursor = ui->textEdit->textCursor();
+        QTextCharFormat format;
+        const QColor color = QColorDialog::getColor(textCursor.charFormat().background().color(), this,
+                                                    "Select Text Highlight Color", QColorDialog::ShowAlphaChannel);
+        if (color.isValid()) {
+            format.setBackground(QBrush(color));
+            textCursor.mergeCharFormat(format);
+            ui->textEdit->mergeCurrentCharFormat(format);
+        }
     });
 
     // Paragraph: Numbered/Bulleted/Check List, Alignment (left, center, right, justify), Indent Left/Right
@@ -335,7 +372,7 @@ MainWindow::MainWindow(QWidget *parent)
     typesettingBlock->setToolTip(tr("Insert a typesetting-enabled subblock"));
     typesettingBlock->setIcon(QIcon(":/img/img/logo_temp.png"));
     typesettingBlock->setText("Typesetting");
-    ui->ribbonTabWidget->addButton("Insert", "Subblo;cks", typesettingBlock);
+    ui->ribbonTabWidget->addButton("Insert", "Subblocks", typesettingBlock);
 
     connect(codeBlock, &QToolButton::clicked, this, [=]() {
         ui->textEdit->insertCodeBlock();
@@ -356,12 +393,31 @@ MainWindow::MainWindow(QWidget *parent)
     insertImage->setPopupMode(QToolButton::MenuButtonPopup);
 
 
+    // Set initial values for the buttons
+    QTextCharFormat f = ui->textEdit->currentCharFormat();
+    f.setFontPointSize(10);
+    fontSizeBox->setValue(10);
+    boldButton->setChecked(f.fontWeight() == QFont::Bold ? true : false);
+    italicButton->setChecked(f.fontItalic());
+    underlineButton->setChecked(f.fontUnderline());
+    subscriptButton->setChecked(f.verticalAlignment() == QTextCharFormat::AlignSubScript ? true : false);
+    superscriptButton->setChecked(f.verticalAlignment() == QTextCharFormat::AlignSuperScript ? true : false);
 
-    // TEST INSERT FRAME
-//    connect(equationBlock, &QPushButton::clicked, this, [=]{
-//        QTextCursor cursor = ui->textEdit->textCursor();
-//        cursor.insertFrame();
-//    });
+    // Set default font (for when everything in the document gets deleted)
+    QFont font = f.font();
+    font.setPointSize(10);
+    ui->textEdit->document()->setDefaultFont(font);
+
+    // Update buttons based on current text char format
+    connect(ui->textEdit, &QTextEdit::currentCharFormatChanged, this, [=](const QTextCharFormat &f){
+        fontBox->setCurrentFont(f.font());
+        fontSizeBox->setValue(f.fontPointSize());
+        boldButton->setChecked(f.fontWeight() == QFont::Bold ? true : false);
+        italicButton->setChecked(f.fontItalic());
+        underlineButton->setChecked(f.fontUnderline());
+        subscriptButton->setChecked(f.verticalAlignment() == QTextCharFormat::AlignSubScript ? true : false);
+        superscriptButton->setChecked(f.verticalAlignment() == QTextCharFormat::AlignSuperScript ? true : false);
+    });
 
 }
 

@@ -52,7 +52,7 @@ CodeSubblockSettings::CodeSubblockSettings(QTextFrame* target, QWidget* parent) 
     formLayout->addRow(borderWidthLabel, borderWidthBox);
 
     buttonBox->setOrientation(Qt::Horizontal);
-    buttonBox->setStandardButtons(QDialogButtonBox::Apply|QDialogButtonBox::Cancel|QDialogButtonBox::Ok);
+    buttonBox->setStandardButtons(QDialogButtonBox::Cancel|QDialogButtonBox::Ok);
     verticalLayout->addWidget(buttonBox);
 
     setWindowTitle(tr("Code Subblock Settings"));
@@ -63,6 +63,13 @@ CodeSubblockSettings::CodeSubblockSettings(QTextFrame* target, QWidget* parent) 
     connect(borderStyleBox, &QComboBox::currentIndexChanged, this, &CodeSubblockSettings::changeFormatBorderStyle);
     connect(borderColorButton, &QPushButton::clicked, this, &CodeSubblockSettings::changeFormatBorderColor);
     connect(borderWidthBox, &QSpinBox::valueChanged, this, &CodeSubblockSettings::changeFormatBorderWidth);
+    connect(buttonBox, &QDialogButtonBox::accepted, this, &CodeSubblockSettings::accept);
+    connect(buttonBox, &QDialogButtonBox::rejected, this, &CodeSubblockSettings::reject);
+}
+
+void CodeSubblockSettings::reject() {
+    m_target->setFrameFormat(m_oldFormat);
+    QDialog::reject();
 }
 
 int CodeSubblockSettings::borderStyleToInt(QTextFrameFormat::BorderStyle _input) {
@@ -154,7 +161,7 @@ void CodeSubblockSettings::changeFormatBorderWidth(int _newWidth) {
 }
 
 void CodeSubblockSettings::changeFormatBorderColor() {
-    const QColor color = QColorDialog::getColor(m_target->frameFormat().borderBrush().color(), this, "Select Border Color", QColorDialog::ShowAlphaChannel	);
+    const QColor color = QColorDialog::getColor(m_target->frameFormat().borderBrush().color(), this, "Select Border Color", QColorDialog::ShowAlphaChannel);
 
     if (color.isValid()) {
         QBrush newBrush = m_target->frameFormat().borderBrush();

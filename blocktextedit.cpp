@@ -20,6 +20,9 @@
 BlockTextEdit::BlockTextEdit(QWidget *parent) : QTextEdit(parent),
     m_document(), m_codeHighlighter(this->document())
 {
+    m_settingsButton = new QPushButton(this);
+    m_settingsButton->setVisible(false);
+
     // Prevents the document from automatically changing
     aboutDocumentChanged();
     connect(this, SIGNAL(textChanged()), this, SLOT(aboutDocumentChanged()));
@@ -31,7 +34,13 @@ BlockTextEdit::BlockTextEdit(QWidget *parent) : QTextEdit(parent),
     connect(verticalScrollBar(), SIGNAL(rangeChanged(int,int)),
         this, SLOT(aboutVerticalScrollRangeChanged(int,int)));
 
-    connect(m_document, &QTextDocument::contentsChange, this, &BlockTextEdit::handleContentsChange);
+    // Subblock buttons movement
+    connect(this, &QTextEdit::cursorPositionChanged, this, &BlockTextEdit::updateSubblockButtons);
+    connect(verticalScrollBar(), &QScrollBar::valueChanged, this, &BlockTextEdit::updateSubblockButtons);
+    connect(horizontalScrollBar(), &QScrollBar::valueChanged, this, &BlockTextEdit::updateSubblockButtons);
+
+    // Open settings menu
+    connect(m_settingsButton, &QPushButton::clicked, this, &BlockTextEdit::openSubblockSettings);
 }
 
 
@@ -292,59 +301,44 @@ void BlockTextEdit::aboutUpdateDocumentGeometry()
     }
 }
 
-void BlockTextEdit::undo() {
-    QTextEdit::undo();
-}
+void BlockTextEdit::updateSubblockButtons() {
+    if(textCursor().currentFrame()->frameFormat().hasProperty(1)) {
+        switch(textCursor().currentFrame()->frameFormat().property(1).toInt()) {
+            case 0:
+                // Get the bounding rectangle of the frame
+                QRectF frameRect = document()->documentLayout()->frameBoundingRect(textCursor().currentFrame());
 
-void BlockTextEdit::redo() {
-    QTextEdit::redo();
-}
+                // Convert the frame-bounding rectangle coordinate system to the one of the central widget
+                QPointF frameRectTopRight = viewport()->mapTo(this, frameRect.topRight());;
+                frameRectTopRight.setY(frameRectTopRight.y() - verticalScrollBar()->value());
 
-void BlockTextEdit::handleContentsChange(int position, int charsRemoved, int charsAdded) {
-    Q_UNUSED(charsRemoved)Q_UNUSED(position)Q_UNUSED(charsAdded)
+                // If the top of the frame is partially off screen, move button downwards, lowest point is the bottom of the frame
+                if(frameRectTopRight.y() <= 0 && frameRectTopRight.y() >= -frameRect.height() + m_settingsButton->height()) {
+                    frameRectTopRight.setY(0);
+                } else if(frameRectTopRight.y() <= 0 && frameRectTopRight.y() >= -frameRect.height()) {
+                    frameRectTopRight.setY(frameRectTopRight.y() + frameRect.height() - m_settingsButton->height());
+                }
 
-    // Finds deleted text
-    if(charsRemoved > 0){
-        // Calls undo to temporarily revert changes
-        QTextEdit::undo();
-
-        // Get deleted text
-        QTextCursor c(textCursor());
-        c.setPosition(position);
-        c.setPosition(position + charsRemoved, QTextCursor::KeepAnchor);
-        QString deletedText(c.selectedText());
-
-        // Search for frame deletion
-        static QRegularExpression frameBoundaryExp("\\p{nChar}");
-        QRegularExpressionMatchIterator it = frameBoundaryExp.globalMatch(deletedText);
-        int deleteCount = 0;
-        c.joinPreviousEditBlock();
-        while(it.hasNext()) {
-            QRegularExpressionMatch match = it.next();
-            QString word = match.captured(0);
-            // Frame deleted
-            if(word == "\uFDD1") {
-                // Insert unicode marker
-                c.setPosition(position + match.capturedStart());
-                c.insertText("\uE001");
-                deleteCount++;
-            }
+                // Move the button
+                QRectF border = QRectF(frameRectTopRight, QSizeF(30, 30));
+                m_settingsButton->setVisible(true);
+                m_settingsButton->setGeometry(border.toRect());
+                border.moveRight(border.right() + 25);
+                break;
         }
-        c.endEditBlock();
-        qDebug() << deletedText;
-
-        // Restore deletion
-        c.setPosition(position);
-        c.setPosition(position + charsRemoved + deleteCount, QTextCursor::KeepAnchor);
-        c.removeSelectedText();
+    } else {
+        if(textCursor().currentFrame() == document()->rootFrame()) {
+            m_settingsButton->setVisible(false);
+        }
     }
+}
 
-//    if(charsAdded > 0){
-//        QTextCursor c(textCursor());
-//        c.setPosition(position);
-//        c.setPosition(position + charsAdded, QTextCursor::KeepAnchor);
-//        qDebug() << "Added: " << charsAdded << " (" << c.selectedText() << ")";
-//    }
+void BlockTextEdit::openSubblockSettings() {
+    if(textCursor().currentFrame()->frameFormat().property(1).isValid() &&
+            textCursor().currentFrame()->frameFormat().property(1).toInt() == 0) {
+        CodeSubblockSettings settings(textCursor().currentFrame());
+        settings.exec();
+    }
 }
 
 void BlockTextEdit::insertCodeBlock() {
@@ -353,10 +347,13 @@ void BlockTextEdit::insertCodeBlock() {
     format.setBorder(1);
     format.setBorderStyle(QTextFrameFormat::BorderStyle_Solid);
     format.setBackground(QBrush(QColor(230, 230, 230)));
+    // property 1 = type, 0 = code
+    format.setProperty(1, 0);
 
     // Insert new frame
-    QTextFrame* newFrame = textCursor().insertFrame(format);
-    newFrame->setProperty("Type", 'C');
+    textCursor().insertFrame(format);
+
+
     /** todo: rewrite so its only one button that is connected to the frame.
     */
 
