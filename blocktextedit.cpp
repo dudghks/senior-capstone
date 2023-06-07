@@ -16,6 +16,7 @@
 #include <QPushButton>
 #include <QRegularExpression>
 #include <QRegularExpressionMatchIterator>
+#include <QClipboard>
 
 BlockTextEdit::BlockTextEdit(QWidget *parent) : QTextEdit(parent),
     m_document(), m_codeHighlighter(this->document())
@@ -105,7 +106,12 @@ void BlockTextEdit::resizeEvent(QResizeEvent* _event) {
 }
 
 void BlockTextEdit::keyPressEvent(QKeyEvent* _event) {
-    QTextEdit::keyPressEvent(_event);
+    // Override default action because formatting gets reset after consecutive newlines
+    if(_event->key() == Qt::Key_Return || _event->key() == Qt::Key_Enter) {
+        textCursor().insertBlock();
+    } else {
+        QTextEdit::keyPressEvent(_event);
+    }
 //    if(textCursor().hasSelection()) {
 //        QString deletedText(textCursor().selectedText());
 //        static QRegularExpression frameBoundaryExp("\\p{nChar}");
