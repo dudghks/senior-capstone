@@ -288,7 +288,7 @@ void Ribbon::addSmallButton(const QString &tabName, const QString &groupName, QF
   }
 }
 
-void Ribbon::addSmallButton(const QString &tabName, const QString &groupName, QSpinBox *button, int row, int column)
+void Ribbon::addSmallButton(const QString &tabName, const QString &groupName, QComboBox *button, int row, int column)
 {
   // Find ribbon tab
   QWidget *tab = nullptr;
@@ -373,7 +373,7 @@ void Ribbon::removeSmallButton(const QString &tabName, const QString &groupName,
   }
 }
 
-void Ribbon::removeSmallButton(const QString &tabName, const QString &groupName, QSpinBox *button)
+void Ribbon::removeSmallButton(const QString &tabName, const QString &groupName, QComboBox *button)
 {
   // Find ribbon tab
   QWidget *tab = nullptr;

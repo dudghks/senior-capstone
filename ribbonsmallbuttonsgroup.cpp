@@ -50,7 +50,7 @@ void RibbonSmallButtonsGroup::addButton(QFontComboBox *button, int row, int colu
   ui->groupGridLayout->addWidget(button, row, column, 1, 4);
 }
 
-void RibbonSmallButtonsGroup::addButton(QSpinBox *button, int row, int column)
+void RibbonSmallButtonsGroup::addButton(QComboBox *button, int row, int column)
 {
   /// \todo add default stuff for this
   button->setSizePolicy(QSizePolicy::Preferred, QSizePolicy::Minimum);
@@ -72,7 +72,7 @@ void RibbonSmallButtonsGroup::removeButton(QFontComboBox *button)
 
 }
 
-void RibbonSmallButtonsGroup::removeButton(QSpinBox *button)
+void RibbonSmallButtonsGroup::removeButton(QComboBox *button)
 {
   /// \todo What happens if button is not part of the layout?
   ui->groupGridLayout->removeWidget(button);

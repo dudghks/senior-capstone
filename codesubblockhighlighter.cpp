@@ -1,5 +1,4 @@
 #include "codesubblockhighlighter.h"
-#include "blocktextedit.h"
 
 CodeSubblockHighlighter::CodeSubblockHighlighter(QTextDocument* _document) :
     QSyntaxHighlighter(_document)

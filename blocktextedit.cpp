@@ -41,13 +41,15 @@ BlockTextEdit::BlockTextEdit(QWidget *parent) : QTextEdit(parent),
 
     // Open settings menu
     connect(m_settingsButton, &QPushButton::clicked, this, &BlockTextEdit::openSubblockSettings);
+
+    textCursor().movePosition(QTextCursor::Start);
 }
 
 
 qreal BlockTextEdit::inchesToPixels(qreal inches, bool _x) {
-    // Convert inches to pixel using physical screen size
+    // Convert inches to pixel using screen size
     QScreen *screen = QApplication::primaryScreen();
-    return inches * (_x ? screen->physicalDotsPerInchX() : screen->physicalDotsPerInchY());
+    return inches * (_x ? screen->logicalDotsPerInchX() : screen->logicalDotsPerInchY());
 }
 
 

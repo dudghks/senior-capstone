@@ -14,6 +14,7 @@ SOURCES += \
     blocktextedit.cpp \
     codesubblockhighlighter.cpp \
     codesubblocksettings.cpp \
+    customtoolbutton.cpp \
     main.cpp \
     mainwindow.cpp \
     ribbon.cpp \
@@ -26,6 +27,7 @@ HEADERS += \
     blocktextedit.h \
     codesubblockhighlighter.h \
     codesubblocksettings.h \
+    customtoolbutton.h \
     mainwindow.h \
     ribbon.h \
     ribbonbuttongroup.h \

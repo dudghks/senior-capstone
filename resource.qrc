@@ -37,5 +37,6 @@
         <file>icons/checklist.png</file>
         <file>icons/table.png</file>
         <file>icons/page_break.png</file>
+        <file>icons/A.png</file>
     </qresource>
 </RCC>

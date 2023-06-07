@@ -11,7 +11,6 @@
 #include <QPushButton>
 
 #include "codesubblockhighlighter.h"
-#include "subblockuserdata.h"
 
 class BlockTextEdit : public QTextEdit
 {

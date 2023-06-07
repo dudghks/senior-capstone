@@ -205,7 +205,7 @@ void RibbonTabContent::addSmallButton(const QString &groupName, QFontComboBox *b
   }
 }
 
-void RibbonTabContent::addSmallButton(const QString &groupName, QSpinBox *button, int row, int column)
+void RibbonTabContent::addSmallButton(const QString &groupName, QComboBox *button, int row, int column)
 {
   // Find ribbon group
   RibbonSmallButtonsGroup *ribbonSmallButtonsGroup = nullptr;
@@ -294,7 +294,7 @@ void RibbonTabContent::removeSmallButton(const QString &groupName, QFontComboBox
   }
 }
 
-void RibbonTabContent::removeSmallButton(const QString &groupName, QSpinBox *button)
+void RibbonTabContent::removeSmallButton(const QString &groupName, QComboBox *button)
 {
   // Find ribbon group
   RibbonSmallButtonsGroup *ribbonSmallButtonsGroup = nullptr;

@@ -47,19 +47,19 @@ public:
   /// \param[in] column The column
   void addButton(QFontComboBox *button, int row, int column);
 
-  /// Add a double spin box to the group.
+  /// Add a combo box to the group.
   ///
   /// \param[in] button The button
   /// \param[in] row The row
   /// \param[in] column The column
-  void addButton(QSpinBox *button, int row, int column);
+  void addButton(QComboBox *button, int row, int column);
 
   /// Remove a button from the group.
   ///
   /// \param[in] button The button
   void removeButton(QToolButton *button);
   void removeButton(QFontComboBox *button);
-  void removeButton(QSpinBox *button);
+  void removeButton(QComboBox *button);
 
 private:
   Ui::RibbonSmallButtonsGroup *ui;

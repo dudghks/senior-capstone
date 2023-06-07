@@ -77,7 +77,7 @@ public:
   /// \param[in] column The column
   void addSmallButton(const QString &groupName, QToolButton *button, int row, int column);
   void addSmallButton(const QString &groupName, QFontComboBox *button, int row, int column);
-  void addSmallButton(const QString &groupName, QSpinBox *button, int row, int column);
+  void addSmallButton(const QString &groupName, QComboBox *button, int row, int column);
 
   /// Remove a small button from the specified group.
   /// The group is also removed if it's empty.
@@ -87,7 +87,7 @@ public:
   /// \param[in] button The button
   void removeSmallButton(const QString &groupName, QToolButton *button);
   void removeSmallButton(const QString &groupName, QFontComboBox *button);
-  void removeSmallButton(const QString &groupName, QSpinBox *button);
+  void removeSmallButton(const QString &groupName, QComboBox *button);
 
 private:
   Ui::RibbonTabContent *ui;
