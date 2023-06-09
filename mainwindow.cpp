@@ -14,6 +14,8 @@
 #include <QColorDialog>
 #include <QPainter>
 #include <QTextList>
+#include <QAction>
+#include <QTextDocumentFragment>
 
 MainWindow::MainWindow(QWidget *parent)
     : QMainWindow(parent)
@@ -82,14 +84,18 @@ MainWindow::MainWindow(QWidget *parent)
 
     // File: New, Open, Save, Save As
     QToolButton *newDocButton = new QToolButton;
-    newDocButton->setText(tr("New"));
-    newDocButton->setToolTip(tr("Open new project"));
-    newDocButton->setIcon(QIcon(":/icons/new.png"));
+    QAction* newDocAction = new QAction;
+    newDocAction->setText(tr("New"));
+    newDocAction->setToolTip(tr("Open new project"));
+    newDocAction->setIcon(QIcon(":/icons/new.png"));
+    newDocButton->setDefaultAction(newDocAction);
     ui->ribbonTabWidget->addButton("File", "File", newDocButton);
     QToolButton *openDocButton = new QToolButton;
-    openDocButton->setText(tr("Open"));
-    openDocButton->setToolTip(tr("Open existing project"));
-    openDocButton->setIcon(QIcon(":/icons/open.png"));
+    QAction* openDocAction = new QAction;
+    openDocAction->setText(tr("Open"));
+    openDocAction->setToolTip(tr("Open existing project"));
+    openDocAction->setIcon(QIcon(":/icons/open.png"));
+    openDocButton->setDefaultAction(openDocAction);
     ui->ribbonTabWidget->addButton("File", "File", openDocButton);
     QToolButton *saveDocButton = new QToolButton;
     saveDocButton->setText(tr("Save"));
@@ -169,9 +175,12 @@ MainWindow::MainWindow(QWidget *parent)
     }
     fontSizeBox->setCurrentIndex(standardSizes.indexOf(QApplication::font().pointSize()));
     QToolButton *boldButton = new QToolButton;
-    boldButton->setToolTip(tr("Bold\n(Ctrl+B)"));
-    boldButton->setIcon(QIcon(":/icons/bold.png"));
-    boldButton->setCheckable(true);
+    QAction *boldAction = new QAction;
+    boldAction->setToolTip(tr("Bold\n(Ctrl+B)"));
+    boldAction->setIcon(QIcon(":/icons/bold.png"));
+    boldAction->setCheckable(true);
+    boldAction->setShortcut(QKeySequence::Bold);
+    boldButton->setDefaultAction(boldAction);
     ui->ribbonTabWidget->addSmallButton("Home", "Font", boldButton, 1, 0);
     QToolButton *italicButton = new QToolButton;
     italicButton->setToolTip(tr("Italics\n(Ctrl+I)"));
@@ -208,7 +217,6 @@ MainWindow::MainWindow(QWidget *parent)
     textHighlightButton->setIcon(QIcon(":/icons/A.png"));
     ui->ribbonTabWidget->addSmallButton("Home", "Font", textHighlightButton, 1, 4);
 
-
     // Add functionality to buttons
     connect(fontBox, &QFontComboBox::textActivated, this, [=](const QString &text){
         QTextCharFormat format;
@@ -229,7 +237,7 @@ MainWindow::MainWindow(QWidget *parent)
             ui->textEdit->setFocus();
         }
     });
-    connect(boldButton, &QToolButton::clicked, this, [=]{
+    connect(boldAction, &QAction::triggered, this, [=]{
         QTextCharFormat format;
         QTextCursor textCursor = ui->textEdit->textCursor();
         format.setFontWeight(boldButton->isChecked() ? QFont::Bold : QFont::Normal);
@@ -476,6 +484,13 @@ MainWindow::MainWindow(QWidget *parent)
 
     // Update buttons based on current text char format
     connect(ui->textEdit, &QTextEdit::currentCharFormatChanged, this, [=](const QTextCharFormat &f){
+        QTextCursor textCursor = ui->textEdit->textCursor();
+        if(textCursor.hasSelection()) {
+            QString selection = textCursor.selection().toMarkdown();
+            qDebug() << selection;
+            QString selection2 = textCursor.selection().toHtml();
+            qDebug() << selection2;
+        }
         fontBox->setCurrentFont(f.font());
         fontSizeBox->setEditText(QString::number(f.font().pointSize()));
         boldButton->setChecked(f.fontWeight() == QFont::Bold ? true : false);
@@ -489,6 +504,7 @@ MainWindow::MainWindow(QWidget *parent)
         } else {
             textHighlightButton->setColor(f.background().color());
         }
+
     });
     connect(ui->textEdit, &QTextEdit::cursorPositionChanged, this, [=]() {
         QTextCursor textCursor = ui->textEdit->textCursor();
