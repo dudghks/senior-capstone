@@ -76,6 +76,7 @@ void CodeSubblockHighlighter::highlightBlock(const QString &text) {
     // Check for the subblock marker in the data
     QVariant data = QTextCursor(currentBlock()).currentFrame()->frameFormat().property(1);
     if(data.isValid()) {
+        // If it is a code subblock
         if(data.toInt() == 0) {
         //! Code from Qt Syntax Highlighter example. Reimplement as needed
 

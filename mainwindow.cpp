@@ -2,6 +2,7 @@
 #include "ui_mainwindow.h"
 #include "blocktextedit.h"
 #include "customtoolbutton.h"
+
 #include <QTextDocument>
 #include <QPixmap>
 #include <QPageSize>
@@ -16,6 +17,10 @@
 #include <QTextList>
 #include <QAction>
 #include <QTextDocumentFragment>
+#include <QRegularExpression>
+#include <QShortcut>
+#include <QClipboard>
+#include <QMimeData>
 
 MainWindow::MainWindow(QWidget *parent)
     : QMainWindow(parent)
@@ -131,16 +136,20 @@ MainWindow::MainWindow(QWidget *parent)
     cutButton->setIcon(QIcon(":/icons/cut.png"));
     cutButton->setToolButtonStyle(Qt::ToolButtonTextBesideIcon);
     ui->ribbonTabWidget->addSmallButton("Home", "Edit", cutButton, 0, 0);
+    cutButton->setEnabled(false);
     QToolButton *copyButton = new QToolButton;
     copyButton->setToolTip(tr("Copy selection to clipboard\n(Ctrl+C)"));
     copyButton->setText("Copy");
     copyButton->setIcon(QIcon(":/icons/copy.png"));
     copyButton->setToolButtonStyle(Qt::ToolButtonTextBesideIcon);
+    copyButton->setEnabled(false);
     ui->ribbonTabWidget->addSmallButton("Home", "Edit", copyButton, 1, 0);
     QToolButton *pasteButton = new QToolButton;
+    QClipboard *clipboard = QApplication::clipboard();
     pasteButton->setToolTip(tr("Paste selection to document\n(Ctrl+V)"));
     pasteButton->setText("Paste");
     pasteButton->setIcon(QIcon(":/icons/paste.png"));
+    pasteButton->setEnabled(clipboard->mimeData()->hasText());
     pasteButton->setToolButtonStyle(Qt::ToolButtonTextBesideIcon);
     ui->ribbonTabWidget->addSmallButton("Home", "Edit", pasteButton, 0, 1);
     QToolButton *findButton = new QToolButton;
@@ -154,18 +163,38 @@ MainWindow::MainWindow(QWidget *parent)
     undoButton->setText("Undo");
     undoButton->setIcon(QIcon(":/icons/undo.png"));
     undoButton->setToolButtonStyle(Qt::ToolButtonTextBesideIcon);
+    undoButton->setEnabled(false);
     ui->ribbonTabWidget->addSmallButton("Home", "Edit", undoButton, 0, 2);
     QToolButton *redoButton = new QToolButton;
     redoButton->setToolTip(tr("Reverse recent undo\nCtrl+Y"));
     redoButton->setText("Redo");
     redoButton->setIcon(QIcon(":/icons/redo.png"));
     redoButton->setToolButtonStyle(Qt::ToolButtonTextBesideIcon);
+    redoButton->setEnabled(false);
     ui->ribbonTabWidget->addSmallButton("Home", "Edit", redoButton, 1, 2);
+
+    // Tracks if these actions are available or not. enables and disables buttons accordingly
+    connect(ui->textEdit, &QTextEdit::copyAvailable, cutButton, &QWidget::setEnabled);
+    connect(ui->textEdit, &QTextEdit::copyAvailable, copyButton, &QWidget::setEnabled);
+    connect(clipboard, &QClipboard::dataChanged, this, [=]() {
+        pasteButton->setEnabled(clipboard->mimeData()->hasText());
+    });
+    connect(ui->textEdit, &QTextEdit::undoAvailable, undoButton, &QWidget::setEnabled); // for some reason this is always available
+    connect(ui->textEdit, &QTextEdit::redoAvailable, redoButton, &QWidget::setEnabled);
+
+    // Button functionality
+    connect(cutButton, &QToolButton::clicked, ui->textEdit, &QTextEdit::cut);
+    connect(copyButton, &QToolButton::clicked, ui->textEdit, &QTextEdit::copy);
+    connect(pasteButton, &QToolButton::clicked, ui->textEdit, &QTextEdit::paste);
+    connect(undoButton, &QToolButton::clicked, ui->textEdit, &QTextEdit::undo);
+    connect(redoButton, &QToolButton::clicked, ui->textEdit, &QTextEdit::redo);
 
     // Font: Font, Font Size, Bold, Italics, Underline, Subscript, Superscript, Color, Highlight
     QFontComboBox *fontBox = new QFontComboBox;
     ui->ribbonTabWidget->addSmallButton("Home", "Font", fontBox, 0, 0);
     QComboBox *fontSizeBox = new QComboBox;
+    QShortcut *increaseFontSizeShortcut = new QShortcut(QKeySequence(Qt::CTRL | Qt::SHIFT | Qt::Key_Period), ui->documentPage);
+    QShortcut *decreaseFontSizeShortcut = new QShortcut(QKeySequence(Qt::CTRL | Qt::SHIFT | Qt::Key_Comma), ui->documentPage);
     ui->ribbonTabWidget->addSmallButton("Home", "Font", fontSizeBox, 0, 4);
     fontSizeBox->setEditable(true);
     fontSizeBox->setInsertPolicy(QComboBox::NoInsert);
@@ -183,24 +212,36 @@ MainWindow::MainWindow(QWidget *parent)
     boldButton->setDefaultAction(boldAction);
     ui->ribbonTabWidget->addSmallButton("Home", "Font", boldButton, 1, 0);
     QToolButton *italicButton = new QToolButton;
-    italicButton->setToolTip(tr("Italics\n(Ctrl+I)"));
-    italicButton->setIcon(QIcon(":/icons/italic.png"));
-    italicButton->setCheckable(true);
+    QAction *italicAction = new QAction;
+    italicAction->setToolTip(tr("Italics\n(Ctrl+I)"));
+    italicAction->setIcon(QIcon(":/icons/italic.png"));
+    italicAction->setCheckable(true);
+    italicAction->setShortcut(QKeySequence::Italic);
+    italicButton->setDefaultAction(italicAction);
     ui->ribbonTabWidget->addSmallButton("Home", "Font", italicButton, 1, 1);
     QToolButton *underlineButton = new QToolButton;
-    underlineButton->setToolTip(tr("Underline\n(Ctrl+U)"));
-    underlineButton->setIcon(QIcon(":/icons/underline.png"));
-    underlineButton->setCheckable(true);
+    QAction *underlineAction = new QAction;
+    underlineAction->setToolTip(tr("Underline\n(Ctrl+U)"));
+    underlineAction->setIcon(QIcon(":/icons/underline.png"));
+    underlineAction->setCheckable(true);
+    underlineAction->setShortcut(QKeySequence::Underline);
+    underlineButton->setDefaultAction(underlineAction);
     ui->ribbonTabWidget->addSmallButton("Home", "Font", underlineButton, 1, 2);
     QToolButton *superscriptButton = new QToolButton;
-    superscriptButton->setToolTip(tr("Superscript\n(Ctrl+Shift+.)"));
-    superscriptButton->setIcon(QIcon(":/icons/superscript.png"));
-    superscriptButton->setCheckable(true);
+    QAction *superscriptAction = new QAction;
+    superscriptAction->setToolTip(tr("Superscript\n(Ctrl+Shift+.)"));
+    superscriptAction->setIcon(QIcon(":/icons/superscript.png"));
+    superscriptAction->setCheckable(true);
+    superscriptAction->setShortcut(QKeySequence(Qt::CTRL | Qt::Key_Period));
+    superscriptButton->setDefaultAction(superscriptAction);
     ui->ribbonTabWidget->addSmallButton("Home", "Font", superscriptButton, 0, 5);
     QToolButton *subscriptButton = new QToolButton;
-    subscriptButton->setToolTip(tr("Subscript\n(Ctrl+Shift+,)"));
-    subscriptButton->setIcon(QIcon(":/icons/subscript.png"));
-    subscriptButton->setCheckable(true);
+    QAction *subscriptAction = new QAction;
+    subscriptAction->setToolTip(tr("Subscript\n(Ctrl+Shift+,)"));
+    subscriptAction->setIcon(QIcon(":/icons/subscript.png"));
+    subscriptAction->setCheckable(true);
+    subscriptAction->setShortcut(QKeySequence(Qt::CTRL | Qt::Key_Comma));
+    subscriptButton->setDefaultAction(subscriptAction);
     ui->ribbonTabWidget->addSmallButton("Home", "Font", subscriptButton, 1, 5);
     CustomToolButton *textColorButton = new CustomToolButton;
     textColorButton->setColor(QColor(0, 0, 0));
@@ -220,9 +261,7 @@ MainWindow::MainWindow(QWidget *parent)
     // Add functionality to buttons
     connect(fontBox, &QFontComboBox::textActivated, this, [=](const QString &text){
         QTextCharFormat format;
-        QTextCursor textCursor = ui->textEdit->textCursor();
         format.setFont(QFont(text));
-        textCursor.mergeCharFormat(format);
         ui->textEdit->mergeCurrentCharFormat(format);
         ui->textEdit->setFocus();
     });
@@ -230,56 +269,65 @@ MainWindow::MainWindow(QWidget *parent)
         qreal pointSize = text.toFloat();
         if(pointSize > 0) {
             QTextCharFormat format;
-            QTextCursor textCursor = ui->textEdit->textCursor();
             format.setFontPointSize(pointSize);
-            textCursor.mergeCharFormat(format);
             ui->textEdit->mergeCurrentCharFormat(format);
             ui->textEdit->setFocus();
         }
     });
+    connect(increaseFontSizeShortcut, &QShortcut::activated, this, [=] {
+        qDebug() << "Font Size Increased";
+        qreal pointSize = fontSizeBox->currentText().toFloat() + 1;
+        fontSizeBox->setEditText(QString::number(pointSize));
+        QTextCharFormat format;
+        format.setFontPointSize(pointSize);
+        ui->textEdit->mergeCurrentCharFormat(format);
+        ui->textEdit->setFocus();
+    });
+    connect(decreaseFontSizeShortcut, &QShortcut::activated, this, [=] {
+        qDebug() << "Font Size Decreased";
+        qreal pointSize = fontSizeBox->currentText().toFloat() - 1;
+        if(pointSize < 1) {
+            pointSize = 1;
+        }
+        fontSizeBox->setEditText(QString::number(pointSize));
+        QTextCharFormat format;
+        format.setFontPointSize(pointSize);
+        ui->textEdit->mergeCurrentCharFormat(format);
+        ui->textEdit->setFocus();
+    });
     connect(boldAction, &QAction::triggered, this, [=]{
         QTextCharFormat format;
-        QTextCursor textCursor = ui->textEdit->textCursor();
         format.setFontWeight(boldButton->isChecked() ? QFont::Bold : QFont::Normal);
-        textCursor.mergeCharFormat(format);
         ui->textEdit->mergeCurrentCharFormat(format);
         ui->textEdit->setFocus();
     });
-    connect(italicButton, &QToolButton::clicked, this, [=]{
+    connect(italicAction, &QAction::triggered, this, [=]{
         QTextCharFormat format;
-        QTextCursor textCursor = ui->textEdit->textCursor();
         format.setFontItalic(italicButton->isChecked());
-        textCursor.mergeCharFormat(format);
         ui->textEdit->mergeCurrentCharFormat(format);
         ui->textEdit->setFocus();
     });
-    connect(underlineButton, &QToolButton::clicked, this, [=]{
+    connect(underlineAction, &QAction::triggered, this, [=]{
         QTextCharFormat format;
-        QTextCursor textCursor = ui->textEdit->textCursor();
         format.setFontUnderline(underlineButton->isChecked());
-        textCursor.mergeCharFormat(format);
         ui->textEdit->mergeCurrentCharFormat(format);
         ui->textEdit->setFocus();
     });
-    connect(superscriptButton, &QToolButton::clicked, this, [=]{
+    connect(superscriptAction, &QAction::triggered, this, [=]{
         QTextCharFormat format;
-        QTextCursor textCursor = ui->textEdit->textCursor();
         if(subscriptButton->isChecked()) {
             subscriptButton->setChecked(false);
         }
         format.setVerticalAlignment(superscriptButton->isChecked() ? QTextCharFormat::AlignSuperScript : QTextCharFormat::AlignNormal);
-        textCursor.mergeCharFormat(format);
         ui->textEdit->mergeCurrentCharFormat(format);
         ui->textEdit->setFocus();
     });
-    connect(subscriptButton, &QToolButton::clicked, this, [=]{
+    connect(subscriptAction, &QAction::triggered, this, [=]{
         QTextCharFormat format;
-        QTextCursor textCursor = ui->textEdit->textCursor();
         if(superscriptButton->isChecked()) {
             superscriptButton->setChecked(false);
         }
         format.setVerticalAlignment(subscriptButton->isChecked() ? QTextCharFormat::AlignSubScript : QTextCharFormat::AlignNormal);
-        textCursor.mergeCharFormat(format);
         ui->textEdit->mergeCurrentCharFormat(format);
         ui->textEdit->setFocus();
     });
@@ -291,7 +339,6 @@ MainWindow::MainWindow(QWidget *parent)
 
         if (color.isValid()) {
             format.setForeground(QBrush(color));
-            textCursor.mergeCharFormat(format);
             ui->textEdit->mergeCurrentCharFormat(format);
             textColorButton->setColor(color);
         }
@@ -304,7 +351,6 @@ MainWindow::MainWindow(QWidget *parent)
                                                     "Select Text Highlight Color", QColorDialog::ShowAlphaChannel);
         if (color.isValid()) {
             format.setBackground(QBrush(color));
-            textCursor.mergeCharFormat(format);
             ui->textEdit->mergeCurrentCharFormat(format);
             textHighlightButton->setColor(color);
         }
@@ -312,46 +358,62 @@ MainWindow::MainWindow(QWidget *parent)
     });
 
     // Paragraph: Numbered/Bulleted/Check List, Alignment (left, center, right, justify), Indent Left/Right
-    QToolButton *numberedList = new QToolButton;
-    numberedList->setToolTip(tr("Numbered List\n(Ctrl+Shift+7)"));
-    numberedList->setIcon(QIcon(":/icons/numbers.png"));
-    ui->ribbonTabWidget->addSmallButton("Home", "Paragraph", numberedList, 0, 0);
-    numberedList->setPopupMode(QToolButton::MenuButtonPopup);
-    numberedList->setCheckable(true);
-    QToolButton *bulletedList = new QToolButton;
-    bulletedList->setToolTip(tr("Bulleted List\n(Ctrl+Shift+8)"));
-    bulletedList->setIcon(QIcon(":/icons/bullets.png"));
-    ui->ribbonTabWidget->addSmallButton("Home", "Paragraph", bulletedList, 0, 1);
-    bulletedList->setPopupMode(QToolButton::MenuButtonPopup);
-    bulletedList->setCheckable(true);
-    QToolButton *checkList = new QToolButton;
-    checkList->setToolTip(tr("Check List\n(Ctrl+Shift+9)"));
-    checkList->setIcon(QIcon(":/icons/checklist.png"));
-    ui->ribbonTabWidget->addSmallButton("Home", "Paragraph", checkList, 0, 2);
-    checkList->setCheckable(true);
+    QToolButton *numberedListButton = new QToolButton;
+    QAction *numberedListAction = new QAction;
+    numberedListAction->setToolTip(tr("Numbered List\n(Ctrl+Shift+7)"));
+    numberedListAction->setIcon(QIcon(":/icons/numbers.png"));
+    numberedListAction->setShortcut(QKeySequence(Qt::CTRL | Qt::SHIFT | Qt::Key_7));
+    numberedListAction->setCheckable(true);
+    numberedListButton->setPopupMode(QToolButton::MenuButtonPopup);
+    numberedListButton->setDefaultAction(numberedListAction);
+    ui->ribbonTabWidget->addSmallButton("Home", "Paragraph", numberedListButton, 0, 0);
+    QToolButton *bulletedListButton = new QToolButton;
+    QAction *bulletedListAction = new QAction;
+    bulletedListAction->setToolTip(tr("Bulleted List\n(Ctrl+Shift+8)"));
+    bulletedListAction->setIcon(QIcon(":/icons/bullets.png"));
+    bulletedListAction->setShortcut(QKeySequence(Qt::CTRL | Qt::SHIFT | Qt::Key_8));
+    bulletedListAction->setCheckable(true);
+    bulletedListButton->setPopupMode(QToolButton::MenuButtonPopup);
+    bulletedListButton->setDefaultAction(bulletedListAction);
+    ui->ribbonTabWidget->addSmallButton("Home", "Paragraph", bulletedListButton, 0, 1);
+    QToolButton *checkListButton = new QToolButton;
+    QAction *checkListAction = new QAction;
+    checkListAction->setToolTip(tr("Check List\n(Ctrl+Shift+9)"));
+    checkListAction->setIcon(QIcon(":/icons/checklist.png"));
+    checkListAction->setShortcut(QKeySequence(Qt::CTRL | Qt::SHIFT | Qt::Key_9));
+    checkListAction->setCheckable(true);
+    checkListButton->setPopupMode(QToolButton::MenuButtonPopup);
+    checkListButton->setDefaultAction(checkListAction);
+    ui->ribbonTabWidget->addSmallButton("Home", "Paragraph", checkListButton, 0, 2);
     QToolButton *alignment = new QToolButton;
     alignment->setToolTip(tr("Text Alignment"));
     alignment->setIcon(QIcon(":/icons/align_left.png"));
     ui->ribbonTabWidget->addSmallButton("Home", "Paragraph", alignment, 1, 0);
     alignment->setPopupMode(QToolButton::MenuButtonPopup);
-    checkList->setPopupMode(QToolButton::MenuButtonPopup);
-    QToolButton *indentLeft = new QToolButton;
-    indentLeft->setToolTip(tr("Indent Line Left\n(Ctrl+[)"));
-    indentLeft->setIcon(QIcon(":/icons/not_indent.png"));
-    ui->ribbonTabWidget->addSmallButton("Home", "Paragraph", indentLeft, 1, 1);
-    QToolButton *indentRight = new QToolButton;
-    indentRight->setToolTip(tr("Indent Line Right\n(Ctrl+])"));
-    indentRight->setIcon(QIcon(":/icons/indent.png"));
-    ui->ribbonTabWidget->addSmallButton("Home", "Paragraph", indentRight, 1, 2);
+    QToolButton *indentLeftButton = new QToolButton;
+    QAction *indentLeftAction = new QAction;
+    indentLeftAction->setToolTip(tr("Indent Line Left\n(Ctrl+[)"));
+    indentLeftAction->setIcon(QIcon(":/icons/not_indent.png"));
+    indentLeftAction->setShortcut(QKeySequence(Qt::CTRL | Qt::Key_BracketLeft));
+    indentLeftButton->setDefaultAction(indentLeftAction);
+    ui->ribbonTabWidget->addSmallButton("Home", "Paragraph", indentLeftButton, 1, 1);
+    QToolButton *indentRightButton = new QToolButton;
+    QAction *indentRightAction = new QAction;
+    indentRightAction->setToolTip(tr("Indent Line Right\n(Ctrl+])"));
+    indentRightAction->setIcon(QIcon(":/icons/indent.png"));
+    indentRightAction->setShortcut(QKeySequence(Qt::CTRL | Qt::Key_BracketRight));
+    indentRightButton->setDefaultAction(indentRightAction);
+    ui->ribbonTabWidget->addSmallButton("Home", "Paragraph", indentRightButton, 1, 2);
 
     // Add button functionality
-    connect(numberedList, &QToolButton::clicked, this, [=]{
+    connect(numberedListAction, &QAction::triggered, this, [=]{
+        // todo: add continue past list
         QTextCursor textCursor = ui->textEdit->textCursor();
         textCursor.beginEditBlock();
         QTextBlockFormat format = textCursor.blockFormat();
         QTextListFormat listFormat;
 
-        if(!numberedList->isChecked()) {
+        if(!numberedListButton->isChecked()) {
             format.setObjectIndex(0);
             textCursor.setBlockFormat(format);
             textCursor.endEditBlock();
@@ -370,14 +432,14 @@ MainWindow::MainWindow(QWidget *parent)
         textCursor.endEditBlock();
         ui->textEdit->setFocus();
     });
-    connect(indentLeft, &QToolButton::clicked, this, [=]{
+    connect(indentLeftAction, &QAction::triggered, this, [=]{
         QTextCursor textCursor = ui->textEdit->textCursor();
         QTextBlockFormat format = textCursor.blockFormat();
         format.setIndent(format.indent() > 0 ? format.indent() - 1 : 0);
         textCursor.setBlockFormat(format);
         ui->textEdit->setFocus();
     });
-    connect(indentRight, &QToolButton::clicked, this, [=]{
+    connect(indentRightAction, &QAction::triggered, this, [=]{
         QTextCursor textCursor = ui->textEdit->textCursor();
         QTextBlockFormat format = textCursor.blockFormat();
         format.setIndent(format.indent() + 1);
@@ -476,6 +538,8 @@ MainWindow::MainWindow(QWidget *parent)
     ui->ribbonTabWidget->addButton("Insert", "Text", insertImage);
     insertImage->setPopupMode(QToolButton::MenuButtonPopup);
 
+    // Set ribbon to home tab
+    ui->ribbonTabWidget->setCurrentIndex(1);
 
     // Set default font (for when everything in the document gets deleted)
     QFont font = ui->textEdit->currentCharFormat().font();
@@ -485,34 +549,93 @@ MainWindow::MainWindow(QWidget *parent)
     // Update buttons based on current text char format
     connect(ui->textEdit, &QTextEdit::currentCharFormatChanged, this, [=](const QTextCharFormat &f){
         QTextCursor textCursor = ui->textEdit->textCursor();
+
+        // If text has selection, check for formatting
+        // (if there is formatted + nonformatted, button is unchecked, other is checked)
+        // for example: plaintext**boldtext** (button is unchecked). **boldtext** (button is checekd)
         if(textCursor.hasSelection()) {
-            QString selection = textCursor.selection().toMarkdown();
-            qDebug() << selection;
-            QString selection2 = textCursor.selection().toHtml();
-            qDebug() << selection2;
+            // Convert selection to HTML to search for formatting
+            QString selection = textCursor.selection().toHtml();
+
+            // <span style=[all text, excludes >]>[all text, excludes <]</span>
+            // Note: in html, < is &lt; and > is &gt; so no worries of user writing < or >
+            static QRegularExpression formattingTags(R"(<span style=[^>]+>[^<]+</span>)");
+
+            // Store all style tags in a string list
+            QRegularExpressionMatchIterator iterator = formattingTags.globalMatch(selection);
+            QStringList formattedText;
+
+            // Store length of different text formats
+            int boldTextLength = 0;
+            int italicTextLength = 0;
+            int underlineTextLength = 0;
+            int superscriptTextLength = 0;
+            int subscriptTextLength = 0;
+            int plainTextLength = textCursor.selection().toPlainText().length();
+
+            // Find amount of formatted text
+            while(iterator.hasNext()) {
+                QString match = iterator.next().captured(0);
+                formattedText.append(match);
+
+                // Get plain text
+                QString innerText = match.mid(match.indexOf(">") + 1, match.lastIndexOf("<") - match.indexOf(">") - 1);
+
+                // <span style="[text]">
+                QString tagInfo = match.first(match.indexOf(">"));
+
+                if(tagInfo.contains("font-weight")) {
+                    boldTextLength += innerText.length();
+                }
+                if(tagInfo.contains("font-style")) {
+                    italicTextLength += innerText.length();
+                }
+                if(tagInfo.contains("text-decoration")) {
+                    underlineTextLength += innerText.length();
+                }
+                if(tagInfo.contains("super")) {
+                    superscriptTextLength += innerText.length();
+                }
+                if(tagInfo.contains("sub")) {
+                    subscriptTextLength += innerText.length();
+                }
+                qDebug() << "Match vs inner text:" << match << "   " << innerText;
+            }
+
+            // True if all text is the given format, otherwise false
+            boldButton->setChecked(boldTextLength == plainTextLength);
+            italicButton->setChecked(italicTextLength == plainTextLength);
+            underlineButton->setChecked(underlineTextLength == plainTextLength);
+            superscriptButton->setChecked(superscriptTextLength == plainTextLength);
+            subscriptButton->setChecked(subscriptTextLength == plainTextLength);
+        } else {
+            // Check if formats are currently applied if there is no selection
+            boldButton->setChecked(f.fontWeight() == QFont::Bold);
+            italicButton->setChecked(f.fontItalic());
+            underlineButton->setChecked(f.fontUnderline());
+            subscriptButton->setChecked(f.verticalAlignment() == QTextCharFormat::AlignSubScript);
+            superscriptButton->setChecked(f.verticalAlignment() == QTextCharFormat::AlignSuperScript);
         }
+
+        // Update font info and colors info
         fontBox->setCurrentFont(f.font());
         fontSizeBox->setEditText(QString::number(f.font().pointSize()));
-        boldButton->setChecked(f.fontWeight() == QFont::Bold ? true : false);
-        italicButton->setChecked(f.fontItalic());
-        underlineButton->setChecked(f.fontUnderline());
-        subscriptButton->setChecked(f.verticalAlignment() == QTextCharFormat::AlignSubScript ? true : false);
-        superscriptButton->setChecked(f.verticalAlignment() == QTextCharFormat::AlignSuperScript ? true : false);
         textColorButton->setColor(f.foreground().color());
         if(f.background().style() == Qt::NoBrush) {
             textHighlightButton->setColor(QColor(0, 0, 0, 0));
         } else {
             textHighlightButton->setColor(f.background().color());
         }
-
     });
+
+    // Update paragraph formatting information
     connect(ui->textEdit, &QTextEdit::cursorPositionChanged, this, [=]() {
         QTextCursor textCursor = ui->textEdit->textCursor();
-        numberedList->setChecked(textCursor.currentList());
+        numberedListButton->setChecked(textCursor.currentList());
     });
     connect(ui->textEdit->document(), &QTextDocument::contentsChanged, this, [=]() {
         QTextCursor textCursor = ui->textEdit->textCursor();
-        numberedList->setChecked(textCursor.currentList());
+        numberedListButton->setChecked(textCursor.currentList());
     });
 }
 

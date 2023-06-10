@@ -38,5 +38,6 @@
         <file>icons/table.png</file>
         <file>icons/page_break.png</file>
         <file>icons/A.png</file>
+        <file>icons/settings.png</file>
     </qresource>
 </RCC>
