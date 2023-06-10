@@ -39,11 +39,11 @@ void CustomToolButton::paintEvent(QPaintEvent *event) {
     QBrush brush(m_color);
 
     p.setBrush(brush);
-    p.drawRect(m_colorArea);
-
     if(!m_border) {
         QPen pen(Qt::transparent);
         p.setPen(pen);
     }
+    p.drawRect(m_colorArea);
+
     QToolButton::paintEvent(event);
 }
