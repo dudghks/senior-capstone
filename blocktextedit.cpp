@@ -281,11 +281,11 @@ void BlockTextEdit::aboutUpdateDocumentGeometry()
     if (rootFrameFormat.leftMargin() != rootFrameMargins.left()
         || rootFrameFormat.topMargin() != rootFrameMargins.top()
         || rootFrameFormat.rightMargin() != rootFrameMargins.right()
-        || rootFrameFormat.bottomMargin() != rootFrameMargins.bottom()) {
+        || rootFrameFormat.bottomMargin() != rootFrameMargins.bottom() + m_pageBreakGap) {
         rootFrameFormat.setLeftMargin(rootFrameMargins.left());
         rootFrameFormat.setTopMargin(rootFrameMargins.top());
         rootFrameFormat.setRightMargin(rootFrameMargins.right());
-        rootFrameFormat.setBottomMargin(rootFrameMargins.bottom());
+        rootFrameFormat.setBottomMargin(rootFrameMargins.bottom() + m_pageBreakGap);
         document()->rootFrame()->setFrameFormat(rootFrameFormat);
     }
 }

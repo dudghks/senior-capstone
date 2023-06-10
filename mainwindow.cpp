@@ -579,7 +579,8 @@ MainWindow::MainWindow(QWidget *parent)
                 formattedText.append(match);
 
                 // Get plain text
-                QString innerText = match.mid(match.indexOf(">") + 1, match.lastIndexOf("<") - match.indexOf(">") - 1);
+                QString innerText = match.mid(match.indexOf(">") + 1, match.lastIndexOf("<") -
+                                              match.indexOf(">") - 1);
 
                 // <span style="[text]">
                 QString tagInfo = match.first(match.indexOf(">"));
