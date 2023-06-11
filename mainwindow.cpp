@@ -28,6 +28,8 @@ MainWindow::MainWindow(QWidget *parent)
 {
     ui->setupUi(this);
 
+    setWindowTitle("NoteBlock");
+    setWindowIcon(QIcon(":/img/img/logo_temp.png"));
 
     // Make sure the app starts on the welcome page
     ui->stackedWidget->setCurrentIndex(0);
@@ -60,10 +62,10 @@ MainWindow::MainWindow(QWidget *parent)
                                      "}");
 
     // Clicking template selection -> document page
-    connect(ui->templateOne, &QPushButton::clicked, this, [this]{ui->stackedWidget->setCurrentIndex(1); ui->ribbonDockWidget->setVisible(true);});
-    connect(ui->templateTwo, &QPushButton::clicked, this, [this]{ui->stackedWidget->setCurrentIndex(1); ui->ribbonDockWidget->setVisible(true);});
-    connect(ui->templateThree, &QPushButton::clicked, this, [this]{ui->stackedWidget->setCurrentIndex(1); ui->ribbonDockWidget->setVisible(true);});
-    connect(ui->templateNone, &QPushButton::clicked, this, [this]{ui->stackedWidget->setCurrentIndex(1); ui->ribbonDockWidget->setVisible(true);});
+    connect(ui->templateOne, &QPushButton::clicked, this, [this]{ui->stackedWidget->setCurrentIndex(1); ui->ribbonDockWidget->setVisible(true); setWindowTitle("NoteBlock - New Document");});
+    connect(ui->templateTwo, &QPushButton::clicked, this, [this]{ui->stackedWidget->setCurrentIndex(1); ui->ribbonDockWidget->setVisible(true); setWindowTitle("NoteBlock - New Document");});
+    connect(ui->templateThree, &QPushButton::clicked, this, [this]{ui->stackedWidget->setCurrentIndex(1); ui->ribbonDockWidget->setVisible(true); setWindowTitle("NoteBlock - New Document");});
+    connect(ui->templateNone, &QPushButton::clicked, this, [this]{ui->stackedWidget->setCurrentIndex(1); ui->ribbonDockWidget->setVisible(true); setWindowTitle("NoteBlock - New Document");});
 
     // Set up document
     ui->textEdit->setVerticalScrollBarPolicy(Qt::ScrollBarAlwaysOn);

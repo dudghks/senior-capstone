@@ -104,6 +104,7 @@ void BlockTextEdit::resizeEvent(QResizeEvent* _event) {
     // Updates viewport and scroll bar range when the window is resized
     updateViewportMargins();
     updateVerticalScrollRange();
+    updateSubblockButtons();
 
     QTextEdit::resizeEvent(_event);
 }

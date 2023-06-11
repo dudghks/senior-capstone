@@ -1,5 +1,4 @@
 #include "codesubblocksettings.h"
-//#include "codesubblock.h"
 
 #include <QLabel>
 #include <QPushButton>
